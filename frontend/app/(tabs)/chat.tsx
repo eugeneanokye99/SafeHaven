@@ -1,9 +1,19 @@
 // ChatListScreen.js
-import React from 'react';
-import { View, Text, FlatList, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, FlatList, StyleSheet, TouchableOpacity, Image, SafeAreaView, StatusBar } from 'react-native';
 import { chats } from './data'; // Importing mock data
+import { FontAwesome6 } from "@expo/vector-icons";
+import { Ionicons } from '@expo/vector-icons';
+import { MaterialIcons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 
 const ChatListScreen = ({ navigation }) => {
+
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
+  const toggleDrawer = () => {
+    setIsDrawerOpen(!isDrawerOpen);
+  };
   const renderItem = ({ item }) => (
     <TouchableOpacity style={styles.chatItem} onPress={() => navigation.navigate('Chat', { chatId: item.id })}>
       <Image source={{ uri: item.avatar }} style={styles.avatar} />
@@ -18,19 +28,56 @@ const ChatListScreen = ({ navigation }) => {
   );
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
+    <View style={styles.topbar}>
+      <FontAwesome6
+        name="bars"
+        size={30}
+        color="black"
+        style={styles.bars}
+        onPress={toggleDrawer}
+      />
+      <View style={styles.userContainer}>
+        <Text style={styles.username}>Eugene</Text>
+        <View style={styles.userIcon}>
+          <MaterialIcons name="person" size={30} color="black" />
+        </View>
+      </View>
+    </View>
+
+    {/* Drawer Content */}
+    {isDrawerOpen && (
+      <View style={styles.drawer}>
+        <TouchableOpacity
+          style={styles.drawerItem}
+          onPress={() => navigation.navigate("Settings")}
+        >
+          <Ionicons name="settings-sharp" size={24} color="black" />
+          <Text style={styles.drawerItemText}>Settings</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.drawerItem}
+          onPress={() => navigation.navigate("Logout")}
+        >
+          <MaterialIcons name="logout" size={24} color="black" />
+          <Text style={styles.drawerItemText}>Logout</Text>
+        </TouchableOpacity>
+      </View>
+    )}
+
       <FlatList
         data={chats}
         keyExtractor={item => item.id}
         renderItem={renderItem}
       />
-    </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    marginTop: StatusBar.currentHeight || 0,
     backgroundColor: '#fff',
   },
   chatItem: {
@@ -65,6 +112,52 @@ const styles = StyleSheet.create({
   chatMessage: {
     fontSize: 16,
     color: '#666',
+  },
+  topbar: {
+    backgroundColor: '#fff',
+    height: 60,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 10,
+  },
+  userContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  username: {
+    fontSize: 20,
+    marginRight: 10,
+  },
+  userIcon: {
+    borderRadius: 999,
+    borderWidth: 2,
+    padding: 8,
+  },
+  bars: {
+    marginLeft: 10,
+  },
+  drawer: {
+    position: 'absolute',
+    zIndex: 1,
+    top: 60,
+    left: 0,
+    width: '80%',
+    height: '100%',
+    backgroundColor: '#fff',
+    paddingVertical: 20,
+    paddingHorizontal: 10,
+    borderWidth: 1,
+    borderColor: '#ccc',
+  },
+  drawerItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  drawerItemText: {
+    fontSize: 20,
+    marginLeft: 10,
   },
 });
 

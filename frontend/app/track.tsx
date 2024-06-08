@@ -1,14 +1,21 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, Text, View, SafeAreaView, StatusBar } from 'react-native'
 import React from 'react'
+import MapView from 'react-native-maps';
+import Map from '../components/Map';
 
-const Track = () => {
+const MapScreen = () => {
   return (
-    <View>
-      <Text>Track</Text>
-    </View>
+    <SafeAreaView style={styles.container}>
+      <Map />
+    </SafeAreaView>
   )
 }
 
-export default Track
+export default MapScreen
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    marginTop:StatusBar.currentHeight
+  },
+})

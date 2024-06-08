@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   SafeAreaView,
   StyleSheet,
@@ -16,12 +16,16 @@ import { useNavigation } from "@react-navigation/native";
 import { AntDesign } from "@expo/vector-icons";
 import { Ionicons } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
+import { useUser } from '../UserContext';
 
 const Home = () => {
   const [search, setSearch] = useState("");
+  const [username, setUsername] = useState("");
   const router = useRouter();
   const navigation = useNavigation();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const { user } = useUser();
+
 
   const toggleDrawer = () => {
     setIsDrawerOpen(!isDrawerOpen);
@@ -38,7 +42,7 @@ const Home = () => {
           onPress={toggleDrawer}
         />
         <View style={styles.userContainer}>
-          <Text style={styles.username}>Eugene</Text>
+          <Text style={styles.username}>{user?.name}</Text>
           <View style={styles.userIcon}>
             <FontAwesome name="user" size={30} color="black" />
           </View>
