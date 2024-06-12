@@ -1,38 +1,56 @@
 import React, { useState } from 'react';
-import { Text, TextInput, View, Button, StyleSheet, TouchableOpacity, StatusBar, Alert } from 'react-native';
+import { Text, TextInput, View, Button, StyleSheet, TouchableOpacity, StatusBar, Alert, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { registerUser } from '../services/api';
+import * as ImagePicker from 'expo-image-picker';
 
-export default function Login() {
+export default function Register() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [address, setAddress] = useState('');
+  const [dob, setDob] = useState('');
+  const [phone, setPhone] = useState('');
+  const [profileImage, setProfileImage] = useState('');
   const router = useRouter();
+
   const handleSignup = async () => {
     try {
-      const data = await registerUser(name, email, password);
+      const data = await registerUser(name, email, password, address, dob, phone, profileImage);
       if (data !== null) {
-        // Registration successful, proceed to the next page
         router.push('/');
       } else {
-        // User already exists, display an error message
-        console.error('User already exists. Please use a different email address.');
         Alert.alert('Signup Failed', 'User already exists. Please use a different email address.');
       }
     } catch (error) {
-      // Handle other errors
       const errorMessage = error instanceof Error ? error.message : 'Something went wrong';
       console.error('Signup failed:', errorMessage);
       Alert.alert('Signup Failed', errorMessage);
     }
   };
-  
+
+  const pickImage = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setProfileImage(result.uri);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.logo}>
-        <Text>Logo</Text>
+      <View style={styles.logoContainer}>
+        {/* <Text style={styles.logoText}>App Logo</Text> */}
+      <Image
+        style={styles.image}
+        source={require("../assets/images/img.jpg")}
+      />
       </View>
       <Text style={styles.title}>Create an account</Text>
       <TextInput
@@ -48,19 +66,41 @@ export default function Login() {
         style={styles.input}
       />
       <TextInput
+        placeholder="Phone Number"
+        value={phone}
+        onChangeText={setPhone}
+        style={styles.input}
+      />
+      <TextInput
+        placeholder="Address"
+        value={address}
+        onChangeText={setAddress}
+        style={styles.input}
+      />
+      <TextInput
+        placeholder="Date of Birth (YYYY-MM-DD)"
+        value={dob}
+        onChangeText={setDob}
+        style={styles.input}
+      />
+      <TextInput
         placeholder="Password"
         value={password}
         onChangeText={setPassword}
         secureTextEntry
         style={styles.input}
       />
+      <TouchableOpacity style={styles.imagePicker} onPress={pickImage}>
+        <Text style={styles.imagePickerText}>Pick a profile picture</Text>
+      </TouchableOpacity>
+      {profileImage && <Image source={{ uri: profileImage }} style={styles.profileImage} />}
       <TouchableOpacity style={styles.button} onPress={handleSignup}>
         <Text style={styles.buttonText}>Sign Up</Text>
       </TouchableOpacity>
       <Text style={styles.loginText}>
         Already have an account?
         <TouchableOpacity onPress={() => router.push('/')}>
-          <Text style={styles.loginLink}>Login</Text>
+          <Text style={styles.loginLink}> Login</Text>
         </TouchableOpacity>
       </Text>
     </SafeAreaView>
@@ -73,6 +113,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: 16,
     marginTop: StatusBar.currentHeight,
+  },
+  logoContainer: {
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  logoText: {
+    fontSize: 32,
+    fontWeight: 'bold',
   },
   title: {
     fontSize: 30,
@@ -88,6 +136,21 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     fontSize: 18,
   },
+  imagePicker: {
+    alignItems: 'center',
+    marginVertical: 10,
+  },
+  imagePickerText: {
+    color: '#007BFF',
+    fontSize: 16,
+  },
+  profileImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    alignSelf: 'center',
+    marginTop: 10,
+  },
   button: {
     backgroundColor: '#007BFF',
     padding: 15,
@@ -100,11 +163,6 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 18,
   },
-  logo: {
-    position: 'absolute',
-    top: 40,
-    left: 0,
-  },
   loginText: {
     textAlign: 'center',
     marginTop: 10,
@@ -113,4 +171,10 @@ const styles = StyleSheet.create({
     color: '#007BFF',
     marginLeft: 3,
   },
+  image: {
+    marginTop: -10,
+    borderRadius: 999,
+    width: 150,
+    height: 150,
+  }
 });

@@ -44,39 +44,35 @@ const Home = () => {
         <View style={styles.userContainer}>
           <Text style={styles.username}>{user?.name}</Text>
           <View style={styles.userIcon}>
-            <FontAwesome name="user" size={30} color="black" />
+            <MaterialIcons name="person" size={30} color="black" />
           </View>
         </View>
       </View>
 
-      {/* Drawer Content */}
-      {isDrawerOpen && (
-        <View style={styles.drawer}>
-          <TouchableOpacity
-            style={styles.drawerItem}
-            onPress={() => router.push("../settings")}
-          >
-            <Text style={styles.drawerItemText}>
-            <Ionicons name="settings-sharp" size={24} color="black" />
-              Settings
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.drawerItem}
-            onPress={() => router.push("/")}
-          >
-            <Text style={styles.drawerItemText}>
-            <MaterialIcons name="logout" size={24} color="black" />
-              Logout
-            </Text>
-          </TouchableOpacity>
-        </View>
-      )}
+    {/* Drawer Content */}
+    {isDrawerOpen && (
+      <View style={styles.drawer}>
+        <TouchableOpacity
+          style={styles.drawerItem}
+          onPress={() => router.push("../settings")}
+        >
+          <Ionicons name="settings-sharp" size={24} color="black" />
+          <Text style={styles.drawerItemText}>Settings</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.drawerItem}
+          onPress={() => router.push("../logout")}
+        >
+          <MaterialIcons name="logout" size={24} color="black" />
+          <Text style={styles.drawerItemText}>Logout</Text>
+        </TouchableOpacity>
+      </View>
+    )}
 
-      {/* <Image
+      <Image
         style={styles.image}
         source={require("../../assets/images/img.jpg")}
-      /> */}
+      />
 
       <View>
         <FontAwesome
@@ -103,11 +99,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     marginTop: StatusBar.currentHeight,
-  },
-  topbar: {
-    backgroundColor: "#fff",
-    height: 60,
-    justifyContent: "center",
   },
   image: {
     height: "50%",
@@ -145,11 +136,17 @@ const styles = StyleSheet.create({
     top: 30,
     left: 60,
   },
+  topbar: {
+    backgroundColor: '#fff',
+    height: 60,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 10,
+  },
   userContainer: {
-    position: "absolute",
-    right: 5,
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   username: {
     fontSize: 20,
@@ -159,35 +156,30 @@ const styles = StyleSheet.create({
     borderRadius: 999,
     borderWidth: 2,
     padding: 8,
-    paddingHorizontal: 13,
   },
   bars: {
     marginLeft: 10,
   },
   drawer: {
-    position: "absolute",
+    position: 'absolute',
     zIndex: 1,
-    top: 80,
+    top: 60,
     left: 0,
-    width: "80%",
-    height: "100%",
-    backgroundColor: "#ffffff",
+    width: '80%',
+    height: '100%',
+    backgroundColor: '#fff',
     paddingVertical: 20,
     paddingHorizontal: 10,
     borderWidth: 1,
-    borderColor: "#ccc",
+    borderColor: '#ccc',
   },
   drawerItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
     marginBottom: 20,
-    borderBottomWidth: 1,
-    paddingVertical: 10,
   },
   drawerItemText: {
     fontSize: 20,
-    flexDirection: 'row', 
-    alignItems: 'center',
-  },
-  drawerIcons: {
-    marginRight: 10,
+    marginLeft: 10,
   },
 });

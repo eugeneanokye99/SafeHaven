@@ -15,6 +15,21 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  address: {
+    type: String,
+    required: true,
+  },
+  dob: {
+    type: String,
+    required: true,
+  },
+  phone: {
+    type: String,
+    required: true,
+  },
+  profileImage: {
+    type: String,
+  },
 });
 
 // Encrypt password before saving

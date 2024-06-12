@@ -5,11 +5,15 @@ import { chats } from './data'; // Importing mock data
 import { FontAwesome6 } from "@expo/vector-icons";
 import { Ionicons } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+import { AntDesign } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
+import { useUser } from '../UserContext';
 
 const ChatListScreen = ({ navigation }) => {
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const { user } = useUser();
+  const router = useRouter();
 
   const toggleDrawer = () => {
     setIsDrawerOpen(!isDrawerOpen);
@@ -38,7 +42,7 @@ const ChatListScreen = ({ navigation }) => {
         onPress={toggleDrawer}
       />
       <View style={styles.userContainer}>
-        <Text style={styles.username}>Eugene</Text>
+        <Text style={styles.username}>{user?.name}</Text>
         <View style={styles.userIcon}>
           <MaterialIcons name="person" size={30} color="black" />
         </View>
@@ -65,6 +69,16 @@ const ChatListScreen = ({ navigation }) => {
       </View>
     )}
 
+<TouchableOpacity style={styles.chatItem} onPress={() => router.push('../chatbot')}>
+      <Image source={require('../../assets/images/img.jpg')} style={styles.avatar} />
+      <View style={styles.chatDetails}>
+        <View style={styles.chatHeader}>
+          <Text style={styles.chatName}>SafeHaven Chatbot</Text>
+          <Text style={styles.chatPin}><AntDesign name="pushpin" size={24} color="red" /></Text>
+        </View>
+        <Text style={styles.chatMessage}>Tap to chat</Text>
+      </View>
+    </TouchableOpacity>
       <FlatList
         data={chats}
         keyExtractor={item => item.id}
@@ -108,6 +122,11 @@ const styles = StyleSheet.create({
   chatTime: {
     fontSize: 14,
     color: '#999',
+  },
+  chatPin: {
+    position: 'absolute',
+    right: 10,
+    top: 15,
   },
   chatMessage: {
     fontSize: 16,

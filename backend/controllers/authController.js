@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 
 // Register User
 exports.registerUser = async (req, res) => {
-  const { name, email, password } = req.body;
+  const { name, email, password, address, dob, phone, profileImage } = req.body;
 
   try {
     // Check if user already exists
@@ -17,6 +17,10 @@ exports.registerUser = async (req, res) => {
       name,
       email,
       password,
+      address,
+      dob,
+      phone,
+      profileImage,
     });
 
     const salt = await bcrypt.genSalt(10);
@@ -57,7 +61,7 @@ exports.loginUser = async (req, res) => {
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(400).json({ message: 'Invalid Credentials' });
+      return res.status(400).json({ message: 'Invalidp Credentials' });
     }
 
     const payload = {
@@ -65,6 +69,10 @@ exports.loginUser = async (req, res) => {
         id: user.id,
         name: user.name,
         email: user.email,
+        address: user.address,
+        dob: user.dob,
+        phone: user.phone,
+        profileImage: user.profileImage,
       },
     };
 

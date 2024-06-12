@@ -8,6 +8,10 @@ export interface AuthResponse {
     id: string;
     name: string;
     email: string;
+    dob: string;
+    address: string;
+    phone: string;
+    profileImage: string;
   };
 }
 
@@ -25,14 +29,14 @@ const handleResponse = async (response: Response): Promise<AuthResponse> => {
   }
 };
 
-export const registerUser = async (name: string, email: string, password: string): Promise<AuthResponse | null> => {
+export const registerUser = async (name: string, email: string, password: string, address: string, dob: string, phone: string, profileImage: string): Promise<AuthResponse | null> => {
   try {
     const response = await fetch(`${API_URL}/register`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ name, email, password }),
+      body: JSON.stringify({ name, email, password, address, dob, phone, profileImage }),
     });
 
     const data = await handleResponse(response);
