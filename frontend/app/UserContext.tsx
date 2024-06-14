@@ -1,7 +1,17 @@
 import React, { createContext, useState, useContext, ReactNode } from 'react';
 
 interface User {
+  id: string;
   name: string;
+  email: string;
+  dob: string;
+  address: string;
+  phone: string;
+  profileImage: string;
+  location?: {
+    latitude: number;
+    longitude: number;
+  };
 }
 
 interface UserContextType {

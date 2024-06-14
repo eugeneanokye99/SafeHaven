@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { Text, TextInput, View, Button, StyleSheet, TouchableOpacity, StatusBar, Alert, Image } from 'react-native';
+import { Text, TextInput, View, Button, ScrollView, StyleSheet, TouchableOpacity, StatusBar, Alert, Image, KeyboardAvoidingView, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { registerUser } from '../services/api';
 import * as ImagePicker from 'expo-image-picker';
+import * as FileSystem from 'expo-file-system';
 
 export default function Register() {
   const [name, setName] = useState('');
@@ -13,6 +14,7 @@ export default function Register() {
   const [dob, setDob] = useState('');
   const [phone, setPhone] = useState('');
   const [profileImage, setProfileImage] = useState('');
+  const [savedImageUri, setSavedImageUri] = useState('');
   const router = useRouter();
 
   const handleSignup = async () => {
@@ -39,12 +41,32 @@ export default function Register() {
     });
 
     if (!result.canceled) {
-      setProfileImage(result.uri);
+      const sourceUri = result.assets[0].uri;
+      const fileName = sourceUri.split('/').pop();
+      const destinationUri = `${FileSystem.documentDirectory}${fileName}`
+      try {
+        await FileSystem.copyAsync({
+          from: sourceUri,
+          to: destinationUri,
+        });
+        setProfileImage(destinationUri);
+        setSavedImageUri(destinationUri);
+      } catch (error) {
+        console.error('Error saving the image:', error);
+        Alert.alert('Error', 'Failed to save the image');
+      }
     }
   };
 
   return (
+    
     <SafeAreaView style={styles.container}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.keyboardAvoidingView}
+      >
+      <ScrollView contentContainerStyle={styles.scrollViewContent}>
+
       <View style={styles.logoContainer}>
         {/* <Text style={styles.logoText}>App Logo</Text> */}
       <Image
@@ -103,6 +125,8 @@ export default function Register() {
           <Text style={styles.loginLink}> Login</Text>
         </TouchableOpacity>
       </Text>
+      </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
@@ -113,6 +137,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: 16,
     marginTop: StatusBar.currentHeight,
+  },
+  scrollViewContent: {
+    flexGrow: 1,
+    justifyContent: 'center',
   },
   logoContainer: {
     alignItems: 'center',
@@ -176,5 +204,8 @@ const styles = StyleSheet.create({
     borderRadius: 999,
     width: 150,
     height: 150,
-  }
+  },
+  keyboardAvoidingView: {
+    flex: 1,
+  },
 });

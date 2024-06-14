@@ -1,22 +1,24 @@
 import React, { useEffect, useState } from "react";
-import {
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  View,
-  StatusBar,
-  Image,
-  TextInput,
-  TouchableOpacity,
-} from "react-native";
+import { SafeAreaView, StyleSheet, Text, View, StatusBar, Image, TextInput, TouchableOpacity,} from "react-native";
 import { FontAwesome6 } from "@expo/vector-icons";
 import { FontAwesome } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useNavigation } from "@react-navigation/native";
-import { AntDesign } from "@expo/vector-icons";
+import { Entypo } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useUser } from '../UserContext';
+import Animated, { Easing, useSharedValue, withTiming, useAnimatedStyle } from 'react-native-reanimated';
+
+const tips = [
+  "Remember to lock your doors and windows before going to bed.",
+  "Stay hydrated! Drink at least 8 glasses of water a day.",
+  "Exercise regularly to maintain your health.",
+  "Keep emergency contacts updated in your phone.",
+  "Take your medications on time.",
+  "Keep your home well-lit to prevent falls.",
+  "Eat a balanced diet with plenty of fruits and vegetables."
+];
 
 const Home = () => {
   const [search, setSearch] = useState("");
@@ -25,11 +27,31 @@ const Home = () => {
   const navigation = useNavigation();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const { user } = useUser();
-
-
+  const imageSource = user?.profileImage ? { uri: user.profileImage } : null;
+  const [currentTip, setCurrentTip] = useState(tips[0]);
+  const fadeAnim = useSharedValue(1);
+  
   const toggleDrawer = () => {
     setIsDrawerOpen(!isDrawerOpen);
   };
+
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     fadeAnim.value = withTiming(0, { duration: 500, easing: Easing.linear }, () => {
+  //       const nextTip = tips[Math.floor(Math.random() * tips.length)];
+  //       setCurrentTip(nextTip);
+  //       fadeAnim.value = withTiming(1, { duration: 500, easing: Easing.linear });
+  //     });
+  //   }, 5000);
+
+  //   return () => clearInterval(interval);
+  // }, []);
+
+  // const animatedStyle = useAnimatedStyle(() => {
+  //   return {
+  //     opacity: fadeAnim.value,
+  //   };
+  // });
 
   return (
     <SafeAreaView style={styles.container}>
@@ -43,8 +65,13 @@ const Home = () => {
         />
         <View style={styles.userContainer}>
           <Text style={styles.username}>{user?.name}</Text>
-          <View style={styles.userIcon}>
-            <MaterialIcons name="person" size={30} color="black" />
+          <View>
+          {imageSource && (
+            <Image
+              style={styles.image}
+              source={imageSource}
+            />
+          )}
           </View>
         </View>
       </View>
@@ -52,6 +79,13 @@ const Home = () => {
     {/* Drawer Content */}
     {isDrawerOpen && (
       <View style={styles.drawer}>
+        <TouchableOpacity
+          style={styles.drawerItem}
+          onPress={() => router.push("../profile")}
+        >
+          <Entypo name="users" size={24} color="black" />
+          <Text style={styles.drawerItemText}>Profile</Text>
+        </TouchableOpacity>
         <TouchableOpacity
           style={styles.drawerItem}
           onPress={() => router.push("../settings")}
@@ -69,10 +103,10 @@ const Home = () => {
       </View>
     )}
 
-      <Image
+      {/* <Image
         style={styles.image}
         source={require("../../assets/images/img.jpg")}
-      />
+      /> */}
 
       <View>
         <FontAwesome
@@ -89,6 +123,12 @@ const Home = () => {
         />
       </View>
 
+
+
+      {/* <Animated.View style={[styles.tipContainer, animatedStyle]}>
+        <Text style={styles.tipText}>{currentTip}</Text>
+      </Animated.View> */}
+
     </SafeAreaView>
   );
 };
@@ -101,8 +141,9 @@ const styles = StyleSheet.create({
     marginTop: StatusBar.currentHeight,
   },
   image: {
-    height: "50%",
-    width: "100%",
+    height: 50,
+    width: 50,
+    borderRadius: 999,
   },
   input: {
     alignSelf: "center",
@@ -152,11 +193,6 @@ const styles = StyleSheet.create({
     fontSize: 20,
     marginRight: 10,
   },
-  userIcon: {
-    borderRadius: 999,
-    borderWidth: 2,
-    padding: 8,
-  },
   bars: {
     marginLeft: 10,
   },
@@ -182,4 +218,17 @@ const styles = StyleSheet.create({
     fontSize: 20,
     marginLeft: 10,
   },
+  // tipContainer: {
+  //   padding: 20,
+  //   backgroundColor: '#fff',
+  //   borderRadius: 10,
+  //   shadowColor: '#000',
+  //   shadowOffset: { width: 0, height: 2 },
+  //   shadowOpacity: 0.3,
+  //   shadowRadius: 4,
+  // },
+  // tipText: {
+  //   fontSize: 18,
+  //   color: '#333',
+  // },
 });

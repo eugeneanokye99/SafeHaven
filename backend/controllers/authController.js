@@ -13,18 +13,20 @@ exports.registerUser = async (req, res) => {
       return res.status(400).json({ message: 'User already exists' });
     }
 
+ 
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
     user = new User({
       name,
       email,
-      password,
+      password: hashedPassword,
       address,
       dob,
       phone,
       profileImage,
     });
-
-    const salt = await bcrypt.genSalt(10);
-    user.password = await bcrypt.hash(password, salt);
 
     await user.save();
 
@@ -61,7 +63,7 @@ exports.loginUser = async (req, res) => {
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(400).json({ message: 'Invalidp Credentials' });
+      return res.status(400).json({ message: 'Invalid Credentials' });
     }
 
     const payload = {
@@ -89,4 +91,6 @@ exports.loginUser = async (req, res) => {
     console.error(err.message);
     res.status(500).json({ message: 'Server error' });
   }
+  
 };
+

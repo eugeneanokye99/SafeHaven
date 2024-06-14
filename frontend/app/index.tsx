@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { Text, TextInput, View, StyleSheet, TouchableOpacity, StatusBar, Alert } from 'react-native';
+import { Text, TextInput, View, StyleSheet, TouchableOpacity, StatusBar, Alert, KeyboardAvoidingView, Platform, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { loginUser, AuthResponse } from '../services/api';
 import { useUser } from './UserContext';
+import * as Location from 'expo-location';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -18,7 +19,24 @@ export default function Login() {
       
       // Check if the login was successful
       if (data !== null) {
-        setUser({ name: data.user.name });
+              // Request location permissions
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      
+      if (status !== 'granted') {
+        Alert.alert('Permission Denied', 'Location permission is required to proceed.');
+        return;
+      }
+
+      // Get the current location
+      const location = await Location.getCurrentPositionAsync({});
+      const { latitude, longitude } = location.coords;
+
+        setUser({ name: data.user.name, profileImage: data.user.profileImage, dob: data.user.dob, phone: data.user.phone, id: data.user.id, email: data.user.email, address: data.user.address,
+          location: {
+            latitude,
+            longitude
+          }
+          });
         router.push('/(tabs)');
       } else {
         console.error('Invalid credentials. Please try again.');
@@ -34,8 +52,16 @@ export default function Login() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.logo}>
-        <Text>Logo</Text>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.keyboardAvoidingView}
+      >
+      <View style={styles.logoContainer}>
+        {/* <Text style={styles.logoText}>App Logo</Text> */}
+      <Image
+        style={styles.image}
+        source={require("../assets/images/img.jpg")}
+      />
       </View>
       <Text style={styles.title}>Welcome Back!</Text>
       <TextInput
@@ -60,6 +86,7 @@ export default function Login() {
           <Text style={styles.signupLink}>Register here</Text>
         </TouchableOpacity>
       </Text>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
@@ -109,5 +136,18 @@ const styles = StyleSheet.create({
     color: '#007BFF',
     top: 3,
     marginLeft: 3,
+  },
+  logoContainer: {
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  image: {
+    marginTop: 50,
+    borderRadius: 999,
+    width: 150,
+    height: 150,
+  },
+  keyboardAvoidingView: {
+    flex: 1,
   },
 });

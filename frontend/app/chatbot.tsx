@@ -8,7 +8,10 @@ import {
   StyleSheet,
   SafeAreaView,
   StatusBar,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
+import { sendMessageToBot } from '../services/api';
 
 const ChatbotScreen = () => {
   const [messages, setMessages] = useState([
@@ -16,7 +19,7 @@ const ChatbotScreen = () => {
   ]);
   const [input, setInput] = useState("");
 
-  const sendMessage = () => {
+  const sendMessage = async () => {
     if (input.trim() === "") return;
 
     const newMessage = { id: Date.now().toString(), text: input, sender: "user" };
@@ -24,15 +27,11 @@ const ChatbotScreen = () => {
 
     setInput("");
 
-    // Simulate bot response
-    setTimeout(() => {
-      const botMessage = {
-        id: Date.now().toString(),
-        text: "I am here to help!",
-        sender: "bot",
-      };
-      setMessages((prevMessages) => [...prevMessages, botMessage]);
-    }, 1000);
+   
+    const botReply = await sendMessageToBot(input);
+    const botMessage = { id: Date.now().toString(), text: botReply.reply, sender: "bot" }
+    setMessages((prevMessages) => [...prevMessages, botMessage]);
+  
   };
 
   const renderItem = ({ item }) => (
@@ -43,6 +42,10 @@ const ChatbotScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        style={{ flex: 1 }}
+      >
       <FlatList
         data={messages}
         renderItem={renderItem}
@@ -61,6 +64,7 @@ const ChatbotScreen = () => {
           <Text style={styles.sendButtonText}>Send</Text>
         </TouchableOpacity>
       </View>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };

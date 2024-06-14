@@ -1,5 +1,6 @@
-const API_URL = 'http://10.0.2.2:3000/api/auth';
-//const API_URL = 'http://localhost:3000/api/auth';
+//const API_URL = 'http://10.0.2.2:3000/api/auth';
+const API_URL = 'http://192.168.0.101:3000';
+//const API_URL = 'http://192.168.127.76:3000';
 
 export interface AuthResponse {
   message: string;
@@ -8,6 +9,7 @@ export interface AuthResponse {
     id: string;
     name: string;
     email: string;
+    password: String;
     dob: string;
     address: string;
     phone: string;
@@ -31,7 +33,7 @@ const handleResponse = async (response: Response): Promise<AuthResponse> => {
 
 export const registerUser = async (name: string, email: string, password: string, address: string, dob: string, phone: string, profileImage: string): Promise<AuthResponse | null> => {
   try {
-    const response = await fetch(`${API_URL}/register`, {
+    const response = await fetch(`${API_URL}/api/auth/register`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -58,7 +60,7 @@ export const registerUser = async (name: string, email: string, password: string
 
 export const loginUser = async (email: string, password: string): Promise<AuthResponse | null> => {
   try {
-    const response = await fetch(`${API_URL}/login`, {
+    const response = await fetch(`${API_URL}/api/auth/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -68,14 +70,40 @@ export const loginUser = async (email: string, password: string): Promise<AuthRe
 
     const data = await handleResponse(response);
 
-    // Check if the response indicates invalid credentials
     if (response.status === 400 && data.message === 'Invalid Credentials') {
-      return null; // Return null to indicate invalid credentials
+      return null; 
     }
 
     return data;
   } catch (error: any) {
     console.error('Login error:', error.message);
+    console.error('Error details:', error);
+    throw new Error(error.message);
+  }
+};
+
+
+
+export const sendMessageToBot = async (message: string): Promise<AuthResponse | null> => {
+  try {
+    const response = await fetch(`${API_URL}/chat/chatbot`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ message }),
+    });
+
+    const data = await handleResponse(response);
+
+
+    if (response.status === 400 && data.message === 'Server error') {
+      return null; 
+    }
+
+    return data;
+  } catch (error: any) {
+    console.error('Error sending message to bot:', error.message);
     console.error('Error details:', error);
     throw new Error(error.message);
   }
