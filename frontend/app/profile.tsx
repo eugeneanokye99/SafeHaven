@@ -6,28 +6,45 @@ import {
   View,
   StatusBar,
   Image,
-  TextInput,
   TouchableOpacity,
 } from "react-native";
 import { FontAwesome6 } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
-import { useNavigation } from "@react-navigation/native";
+import { useRouter, useLocalSearchParams } from "expo-router";
 import { Entypo } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Feather } from '@expo/vector-icons';
-import { useUser } from './UserContext';
+import { fetchUserById } from '../services/api';
 
 const ProfileScreen = () => {
-  const navigation = useNavigation();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [profileUser, setProfileUser] = useState(null);
   const router = useRouter();
-  const { user } = useUser();
-  const imageSource = user?.profileImage ? { uri: user.profileImage } : null;
-  
+  const { userId } = useLocalSearchParams();
+
+  useEffect(() => {
+    const getUser = async () => {
+      try {
+        const user = await fetchUserById(userId);
+        setProfileUser(user);
+      } catch (error) {
+        console.error('Error fetching user: ', error);
+      }
+    };
+
+    getUser();
+  }, [userId]);
+
+
   const toggleDrawer = () => {
     setIsDrawerOpen(!isDrawerOpen);
   };
+
+  if (!profileUser) {
+    return <Text style={{flex: 1}}>Loading...</Text>;
+  }
+
+  const imageSource = profileUser?.profileImage ? { uri: profileUser.profileImage } : null;
 
   return (
     <SafeAreaView style={styles.container}>
@@ -41,56 +58,55 @@ const ProfileScreen = () => {
         />
       </View>
 
-    {/* Drawer Content */}
-    {isDrawerOpen && (
-      <View style={styles.drawer}>
-        <TouchableOpacity
-          style={styles.drawerItem}
-          onPress={() => router.push("./(tabs)")}
-        >
-          <Entypo name="home" size={24} color="black" />
-          <Text style={styles.drawerItemText}>Home</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.drawerItem}
-          onPress={() => router.push("../settings")}
-        >
-          <Ionicons name="settings-sharp" size={24} color="black" />
-          <Text style={styles.drawerItemText}>Settings</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.drawerItem}
-          onPress={() => router.push("../logout")}
-        >
-          <MaterialIcons name="logout" size={24} color="black" />
-          <Text style={styles.drawerItemText}>Logout</Text>
-        </TouchableOpacity>
-      </View>
-    )}
-
-    <View style={styles.mainContainer}>
-    {imageSource && (
-            <Image
-              style={styles.profileImage}
-              source={imageSource}
-            />
+      {isDrawerOpen && (
+        <View style={styles.drawer}>
+          <TouchableOpacity
+            style={styles.drawerItem}
+            onPress={() => router.push("./(tabs)")}
+          >
+            <Entypo name="home" size={24} color="black" />
+            <Text style={styles.drawerItemText}>Home</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.drawerItem}
+            onPress={() => router.push("../settings")}
+          >
+            <Ionicons name="settings-sharp" size={24} color="black" />
+            <Text style={styles.drawerItemText}>Settings</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.drawerItem}
+            onPress={() => router.push("../logout")}
+          >
+            <MaterialIcons name="logout" size={24} color="black" />
+            <Text style={styles.drawerItemText}>Logout</Text>
+          </TouchableOpacity>
+        </View>
       )}
-      <Text style={styles.userName}>{user?.name}</Text>
-      <Text style={styles.userDetails}>{user?.email}</Text>
-      <Text style={styles.userDetails}>{user?.phone}</Text>
-      <Text style={styles.userDetails}>{user?.address}</Text>
-      <Text style={styles.userDetails}>{user?.location?.latitude}</Text>
-      <Text style={styles.userDetails}>{user?.location?.longitude}</Text>
-      
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button} onPress={() => console.log('Link button pressed')}>
-          <Text style={styles.buttonText}><Feather name="link" size={20} color="white" /> Link</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={() => console.log('Chat button pressed')}>
-          <Text style={styles.buttonText}><Ionicons name="chatbox" size={20} color="white" /> Chat</Text>
-        </TouchableOpacity>
+
+      <View style={styles.mainContainer}>
+        {imageSource && (
+          <Image
+            style={styles.profileImage}
+            source={imageSource}
+          />
+        )}
+        <Text style={styles.userName}>{profileUser?.name}</Text>
+        <Text style={styles.userDetails}>{profileUser?.email}</Text>
+        <Text style={styles.userDetails}>{profileUser?.phone}</Text>
+        <Text style={styles.userDetails}>{profileUser?.address}</Text>
+        <Text style={styles.userDetails}>{profileUser?.location?.latitude}</Text>
+        <Text style={styles.userDetails}>{profileUser?.location?.longitude}</Text>
+
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.button} onPress={() => console.log('Link button pressed')}>
+            <Text style={styles.buttonText}><Feather name="link" size={20} color="white" /> Link</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={() => console.log('Chat button pressed')}>
+            <Text style={styles.buttonText}><Ionicons name="chatbox" size={20} color="white" /> Chat</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
     </SafeAreaView>
   );
 };
@@ -176,7 +192,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 20,
   }
-
 });
 
 export default ProfileScreen;

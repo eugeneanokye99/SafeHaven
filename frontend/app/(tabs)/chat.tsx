@@ -1,7 +1,6 @@
-// ChatListScreen.js
 import React, { useState } from 'react';
 import { View, Text, FlatList, StyleSheet, TouchableOpacity, Image, SafeAreaView, StatusBar } from 'react-native';
-import { chats } from './data'; // Importing mock data
+import { chats } from './data';
 import { FontAwesome6 } from "@expo/vector-icons";
 import { Ionicons } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -18,6 +17,7 @@ const ChatListScreen = ({ navigation }) => {
   const toggleDrawer = () => {
     setIsDrawerOpen(!isDrawerOpen);
   };
+  
   const renderItem = ({ item }) => (
     <TouchableOpacity style={styles.chatItem} onPress={() => navigation.navigate('Chat', { chatId: item.id })}>
       <Image source={{ uri: item.avatar }} style={styles.avatar} />

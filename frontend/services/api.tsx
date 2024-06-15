@@ -1,8 +1,10 @@
 //const API_URL = 'http://10.0.2.2:3000/api/auth';
 const API_URL = 'http://192.168.0.101:3000';
-//const API_URL = 'http://192.168.127.76:3000';
+//const API_URL = 'http://172.20.10.2:3000';
 
 export interface AuthResponse {
+  userId: string;
+  query: string;
   message: string;
   token?: string;
   user?: {
@@ -106,5 +108,34 @@ export const sendMessageToBot = async (message: string): Promise<AuthResponse | 
     console.error('Error sending message to bot:', error.message);
     console.error('Error details:', error);
     throw new Error(error.message);
+  }
+};
+
+
+export const fetchUserById = async (userId: string): Promise<AuthResponse | null> => {
+  try {
+    const response = await fetch(`${API_URL}/api/auth/user?userId=${userId}`);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const user = await response.json();
+    return user;
+  } catch (error) {
+    console.error('Fetch error: ', error);
+    throw error;
+  }
+};
+
+export const searchUsers = async (query: string): Promise<AuthResponse | null> => {
+  try {
+    const response = await fetch(`${API_URL}/api/auth/search?q=${query}`);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const results = await response.json();
+    return results;
+  } catch (error) {
+    console.error('Search error: ', error);
+    throw error;
   }
 };
