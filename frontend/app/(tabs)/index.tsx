@@ -25,7 +25,6 @@ const Home = () => {
   const [search, setSearch] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const router = useRouter();
-  const navigation = useNavigation();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const { user } = useUser();
   const imageSource = user?.profileImage ? { uri: user.profileImage } : null;

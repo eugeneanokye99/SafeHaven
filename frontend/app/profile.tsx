@@ -15,12 +15,15 @@ import { Ionicons } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Feather } from '@expo/vector-icons';
 import { fetchUserById } from '../services/api';
+import { useUser } from "./UserContext";
+
 
 const ProfileScreen = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [profileUser, setProfileUser] = useState(null);
   const router = useRouter();
   const { userId } = useLocalSearchParams();
+  const { user } = useUser();
 
   useEffect(() => {
     const getUser = async () => {
@@ -45,6 +48,13 @@ const ProfileScreen = () => {
   }
 
   const imageSource = profileUser?.profileImage ? { uri: profileUser.profileImage } : null;
+
+  const handleChatButtonPress = () => {
+    router.push({
+      pathname: '/chatscreen',
+      params: { currentUserId: user?.id, otherUserId: userId },
+    });
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -102,7 +112,7 @@ const ProfileScreen = () => {
           <TouchableOpacity style={styles.button} onPress={() => console.log('Link button pressed')}>
             <Text style={styles.buttonText}><Feather name="link" size={20} color="white" /> Link</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={() => console.log('Chat button pressed')}>
+          <TouchableOpacity style={styles.button} onPress={handleChatButtonPress}>
             <Text style={styles.buttonText}><Ionicons name="chatbox" size={20} color="white" /> Chat</Text>
           </TouchableOpacity>
         </View>

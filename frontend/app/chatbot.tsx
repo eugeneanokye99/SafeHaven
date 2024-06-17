@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -10,28 +10,56 @@ import {
   StatusBar,
   KeyboardAvoidingView,
   Platform,
+  Image,
 } from "react-native";
-import { sendMessageToBot } from '../services/api';
+import { sendMessageToBot, fetchBotMessages } from '../services/api';
+import { useRoute } from "@react-navigation/native";
+import { useRouter } from "expo-router";
+import { useUser } from "./UserContext";
 
 const ChatbotScreen = () => {
   const [messages, setMessages] = useState([
     { id: "1", text: "Hello! How can I assist you today?", sender: "bot" },
   ]);
   const [input, setInput] = useState("");
+  const route = useRoute();
+  const router = useRouter();
+  const { userId } = route.params;
+  const { user } = useUser();
+
+  useEffect(() => {
+    const fetchInitialData = async () => {
+      try {
+        const messagesData = await fetchBotMessages(userId);
+        const formattedMessages = messagesData.map((msg) => ({
+          id: msg._id,
+          text: msg.message,
+          sender: msg.sender === userId ? user?.name : "bot",
+        }));
+        setMessages((prevMessages) => [...prevMessages, ...formattedMessages]);
+      } catch (error) {
+        console.error("Error fetching initial data:", error);
+      }
+    };
+
+    fetchInitialData();
+  }, [userId]);
 
   const sendMessage = async () => {
     if (input.trim() === "") return;
 
-    const newMessage = { id: Date.now().toString(), text: input, sender: "user" };
+    const newMessage = { id: Date.now().toString(), text: input, sender: user?.name };
     setMessages((prevMessages) => [...prevMessages, newMessage]);
 
     setInput("");
 
-   
-    const botReply = await sendMessageToBot(input);
-    const botMessage = { id: Date.now().toString(), text: botReply.reply, sender: "bot" }
-    setMessages((prevMessages) => [...prevMessages, botMessage]);
-  
+    try {
+      const botReply = await sendMessageToBot(userId, input);
+      const botMessage = { id: Date.now().toString(), text: botReply.reply, sender: "bot" };
+      setMessages((prevMessages) => [...prevMessages, botMessage]);
+    } catch (error) {
+      console.error("Error sending message:", error);
+    }
   };
 
   const renderItem = ({ item }) => (
@@ -46,24 +74,33 @@ const ChatbotScreen = () => {
         behavior={Platform.OS === "ios" ? "padding" : undefined}
         style={{ flex: 1 }}
       >
-      <FlatList
-        data={messages}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.chatContainer}
-      />
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.input}
-          value={input}
-          onChangeText={setInput}
-          placeholder="Type a message..."
-          placeholderTextColor="#888"
+        <View style={styles.header}>
+          <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+            <Text style={styles.backButtonText}>{"< Back"}</Text>
+          </TouchableOpacity>
+          <Image source={require('../assets/images/img.jpg')} style={styles.profileImage} />
+          <View style={styles.userInfo}>
+            <Text style={styles.userName}>SafeHaven Bot</Text>
+          </View>
+        </View>
+        <FlatList
+          data={messages}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={styles.chatContainer}
         />
-        <TouchableOpacity style={styles.sendButton} onPress={sendMessage}>
-          <Text style={styles.sendButtonText}>Send</Text>
-        </TouchableOpacity>
-      </View>
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={styles.input}
+            value={input}
+            onChangeText={setInput}
+            placeholder="Type a message..."
+            placeholderTextColor="#888"
+          />
+          <TouchableOpacity style={styles.sendButton} onPress={sendMessage}>
+            <Text style={styles.sendButtonText}>Send</Text>
+          </TouchableOpacity>
+        </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -122,6 +159,33 @@ const styles = StyleSheet.create({
   },
   sendButtonText: {
     color: "#fff",
+    fontWeight: "bold",
+  },
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#ccc",
+  },
+  backButton: {
+    marginRight: 10,
+  },
+  backButtonText: {
+    color: "#007BFF",
+    fontSize: 18,
+  },
+  profileImage: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    marginRight: 10,
+  },
+  userInfo: {
+    flex: 1,
+  },
+  userName: {
+    fontSize: 18,
     fontWeight: "bold",
   },
 });

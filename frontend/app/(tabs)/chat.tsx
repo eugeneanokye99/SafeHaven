@@ -1,26 +1,41 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, StyleSheet, TouchableOpacity, Image, SafeAreaView, StatusBar } from 'react-native';
-import { chats } from './data';
 import { FontAwesome6 } from "@expo/vector-icons";
 import { Ionicons } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
 import { AntDesign } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useUser } from '../UserContext';
+import { fetchChats } from '../../services/api';
 
-const ChatListScreen = ({ navigation }) => {
-
+const ChatListScreen = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const { user } = useUser();
+  const [chats, setChats] = useState([]);
   const router = useRouter();
+  const imageSource = user?.profileImage ? { uri: user.profileImage } : null;
+
 
   const toggleDrawer = () => {
     setIsDrawerOpen(!isDrawerOpen);
   };
-  
+
+  useEffect(() => {
+    const fetchChatData = async () => {
+      try {
+        const chatData = await fetchChats(user?.id);
+        setChats(chatData);
+      } catch (error) {
+        console.error("Error fetching chats:", error);
+      }
+    };
+
+    fetchChatData();
+  }, [user?.id]);
+
   const renderItem = ({ item }) => (
-    <TouchableOpacity style={styles.chatItem} onPress={() => navigation.navigate('Chat', { chatId: item.id })}>
-      <Image source={{ uri: item.avatar }} style={styles.avatar} />
+    <TouchableOpacity style={styles.chatItem} onPress={() =>    router.push({ pathname: '/chatscreen', params: { currentUserId: user?.id, otherUserId: item._id },})}>
+      <Image source={{ uri: item.profileImage }} style={styles.avatar} />
       <View style={styles.chatDetails}>
         <View style={styles.chatHeader}>
           <Text style={styles.chatName}>{item.name}</Text>
@@ -33,55 +48,52 @@ const ChatListScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-    <View style={styles.topbar}>
-      <FontAwesome6
-        name="bars"
-        size={30}
-        color="black"
-        style={styles.bars}
-        onPress={toggleDrawer}
-      />
-      <View style={styles.userContainer}>
-        <Text style={styles.username}>{user?.name}</Text>
-        <View style={styles.userIcon}>
-          <MaterialIcons name="person" size={30} color="black" />
+      <View style={styles.topbar}>
+        <FontAwesome6
+          name="bars"
+          size={30}
+          color="black"
+          style={styles.bars}
+          onPress={toggleDrawer}
+        />
+        <View style={styles.userContainer}>
+          <Text style={styles.username}>{user?.name}</Text>
+          {imageSource && <Image style={styles.image} source={imageSource} />}
         </View>
       </View>
-    </View>
 
-    {/* Drawer Content */}
-    {isDrawerOpen && (
-      <View style={styles.drawer}>
-        <TouchableOpacity
-          style={styles.drawerItem}
-          onPress={() => navigation.navigate("Settings")}
-        >
-          <Ionicons name="settings-sharp" size={24} color="black" />
-          <Text style={styles.drawerItemText}>Settings</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.drawerItem}
-          onPress={() => navigation.navigate("Logout")}
-        >
-          <MaterialIcons name="logout" size={24} color="black" />
-          <Text style={styles.drawerItemText}>Logout</Text>
-        </TouchableOpacity>
-      </View>
-    )}
-
-<TouchableOpacity style={styles.chatItem} onPress={() => router.push('../chatbot')}>
-      <Image source={require('../../assets/images/img.jpg')} style={styles.avatar} />
-      <View style={styles.chatDetails}>
-        <View style={styles.chatHeader}>
-          <Text style={styles.chatName}>SafeHaven Chatbot</Text>
-          <Text style={styles.chatPin}><AntDesign name="pushpin" size={24} color="red" /></Text>
+      {isDrawerOpen && (
+        <View style={styles.drawer}>
+          <TouchableOpacity
+            style={styles.drawerItem}
+            onPress={() => router.push("Settings")}
+          >
+            <Ionicons name="settings-sharp" size={24} color="black" />
+            <Text style={styles.drawerItemText}>Settings</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.drawerItem}
+            onPress={() => router.push("Logout")}
+          >
+            <MaterialIcons name="logout" size={24} color="black" />
+            <Text style={styles.drawerItemText}>Logout</Text>
+          </TouchableOpacity>
         </View>
-        <Text style={styles.chatMessage}>Tap to chat</Text>
-      </View>
-    </TouchableOpacity>
+      )}
+
+      <TouchableOpacity style={styles.chatItem} onPress={() => router.push({pathname: '../chatbot', params: { userId: user?.id} })}>
+        <Image source={require('../../assets/images/img.jpg')} style={styles.avatar} />
+        <View style={styles.chatDetails}>
+          <View style={styles.chatHeader}>
+            <Text style={styles.chatName}>SafeHaven Chatbot</Text>
+            <Text style={styles.chatPin}><AntDesign name="pushpin" size={24} color="red" /></Text>
+          </View>
+          <Text style={styles.chatMessage}>Tap to chat</Text>
+        </View>
+      </TouchableOpacity>
       <FlatList
         data={chats}
-        keyExtractor={item => item.id}
+        keyExtractor={item => item._id}
         renderItem={renderItem}
       />
     </SafeAreaView>
@@ -105,6 +117,11 @@ const styles = StyleSheet.create({
     height: 50,
     borderRadius: 25,
     marginRight: 16,
+  },
+  image: {
+    height: 50,
+    width: 50,
+    borderRadius: 999,
   },
   chatDetails: {
     flex: 1,

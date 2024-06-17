@@ -1,7 +1,6 @@
 // ActivityLogScreen.js
 import React from 'react';
 import { View, Text, FlatList, StyleSheet, Image } from 'react-native';
-import { activities } from './activityData'; // Importing mock data
 
 const ActivityLogScreen = () => {
   const renderItem = ({ item }) => (
@@ -16,11 +15,11 @@ const ActivityLogScreen = () => {
 
   return (
     <View style={styles.container}>
-      <FlatList
+      {/* <FlatList
         data={activities}
         keyExtractor={item => item.id}
         renderItem={renderItem}
-      />
+      /> */}
     </View>
   );
 };
