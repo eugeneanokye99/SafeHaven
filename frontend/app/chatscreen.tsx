@@ -146,4 +146,4 @@ const styles = StyleSheet.create({
       },
 });
 
-export default ChatScreen;
+export default ChatScreen;;

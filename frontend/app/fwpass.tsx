@@ -14,26 +14,9 @@ export default function Login() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Login</Text>
-      <TextInput
-        placeholder="Email"
-        value={email}
-        onChangeText={setEmail}
-        style={styles.input}
-      />
-      <TextInput
-        placeholder="Password"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-        style={styles.input}
-      />
-      <TouchableOpacity style={styles.button} onPress={handleLogin}>
-        <Text style={styles.buttonText}>Login</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.button} onPress={() => router.push('/signup')}>
-        <Text style={styles.buttonText}>Go to Sign Up</Text>
-      </TouchableOpacity>
+      <Text>
+        test
+      </Text>
     </View>
   );
 }
