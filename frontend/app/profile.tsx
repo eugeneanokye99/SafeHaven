@@ -105,8 +105,8 @@ const ProfileScreen = () => {
         <Text style={styles.userDetails}>{profileUser?.email}</Text>
         <Text style={styles.userDetails}>{profileUser?.phone}</Text>
         <Text style={styles.userDetails}>{profileUser?.address}</Text>
-        <Text style={styles.userDetails}>{profileUser?.location?.latitude}</Text>
-        <Text style={styles.userDetails}>{profileUser?.location?.longitude}</Text>
+        <Text style={styles.userDetails}>{user?.location?.latitude}</Text>
+        <Text style={styles.userDetails}>{user?.location?.longitude}</Text>
 
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={styles.button} onPress={() => console.log('Link button pressed')}>

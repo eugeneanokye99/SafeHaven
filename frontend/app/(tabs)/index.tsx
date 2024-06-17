@@ -74,7 +74,7 @@ const Home = () => {
         <View style={styles.drawer}>
           <TouchableOpacity
             style={styles.drawerItem}
-            onPress={() => router.push("../profile")}
+            onPress={() => handleUserPress(user?.id)}
           >
             <Entypo name="users" size={24} color="black" />
             <Text style={styles.drawerItemText}>Profile</Text>
