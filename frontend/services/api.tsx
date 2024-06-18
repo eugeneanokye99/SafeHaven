@@ -1,5 +1,5 @@
 //const API_URL = 'http://10.0.2.2:3000/api/auth';
-const API_URL = 'http://192.168.0.100:3000';
+const API_URL = 'http://192.168.43.167:3000';
 //const API_URL = 'http://172.20.10.2:3000';
 
 export interface AuthResponse {

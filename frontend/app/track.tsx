@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View, SafeAreaView, StatusBar } from 'react-native'
 import React from 'react'
 import MapView from 'react-native-maps';
-import Map from '../components/Map';
+import Map from './(tabs)/map';
 
 const MapScreen = () => {
   return (

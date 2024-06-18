@@ -34,11 +34,11 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="link"
+        name="map"
         options={{
-          title: 'Link',
+          title: 'Map',
           tabBarIcon: ({ color, focused }) => (
-            <Entypo name="link" size={24} color={color} />
+            <Entypo name="map" size={24} color={color} />
           ),
         }}
       />
