@@ -19,8 +19,6 @@ import { Ionicons } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useUser } from "../UserContext";
 import { searchUsers } from '../../services/api';
-
-
 const Home = () => {
   const [search, setSearch] = useState("");
   const [searchResults, setSearchResults] = useState([]);
@@ -28,11 +26,9 @@ const Home = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const { user } = useUser();
   const imageSource = user?.profileImage ? { uri: user.profileImage } : null;
-
   const toggleDrawer = () => {
     setIsDrawerOpen(!isDrawerOpen);
   };
-
   useEffect(() => {
     if (search.length > 0) {
       const fetchResults = async () => {
@@ -48,12 +44,10 @@ const Home = () => {
       setSearchResults([]);
     }
   }, [search]);
-
   
   const handleUserPress = (userId) => {
     router.push(`../profile?userId=${userId}`);
   };
-
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.topbar}>
@@ -69,7 +63,6 @@ const Home = () => {
           {imageSource && <Image style={styles.image} source={imageSource} />}
         </View>
       </View>
-
       {isDrawerOpen && (
         <View style={styles.drawer}>
           <TouchableOpacity
@@ -95,7 +88,6 @@ const Home = () => {
           </TouchableOpacity>
         </View>
       )}
-
       <View>
         <FontAwesome name="search" size={24} color="black" style={styles.search} />
         <TextInput
@@ -105,7 +97,6 @@ const Home = () => {
           style={styles.input}
         />
       </View>
-
       {searchResults.length > 0 && (
         <FlatList
           data={searchResults}
@@ -122,9 +113,7 @@ const Home = () => {
     </SafeAreaView>
   );
 };
-
 export default Home;
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
