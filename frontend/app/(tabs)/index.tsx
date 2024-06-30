@@ -64,24 +64,13 @@ const Home = () => {
         </View>
       </View>
       {isDrawerOpen && (
-         <View style={styles.drawer}>
-           <TouchableOpacity
-             style={styles.drawerItem}
-             onPress={() => handleUserPress(user?.id)}
-           >
-             <Entypo name="users" size={24} color="black" />
-             <Text style={styles.drawerItemText}>Profile</Text>
-
-    
-          
-            
-    
-
-          
-          Expand Down
-    
-    
-  
+        <View style={styles.drawer}>
+          <TouchableOpacity
+            style={styles.drawerItem}
+            onPress={() => handleUserPress(user?.id)}
+          >
+            <Entypo name="users" size={24} color="black" />
+            <Text style={styles.drawerItemText}>Profile</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.drawerItem}
