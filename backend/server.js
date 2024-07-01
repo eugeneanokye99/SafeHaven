@@ -10,7 +10,7 @@ dotenv.config();
 connectDB();
 
 const app = express();
-
+const mapRoutes = require('./routes/mapRoutes');
   
   // Apply CORS middleware
   app.use(cors());
@@ -21,6 +21,7 @@ app.use(express.json());
 // Define routes
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/chat', require('./routes/chatRoutes'));
+app.use('/map', require('./routes/mapRoutes'));
 
 const PORT = process.env.PORT || 3000;
 
