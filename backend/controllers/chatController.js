@@ -8,7 +8,7 @@ const djangoBackendUrl = 'http://127.0.0.1:8000/chatbot/predict/';
 const predictResponse = async (message) => {
   try {
     const response = await axios.post(djangoBackendUrl, { message });
-    return response.data.reply;
+    return response.data.response;
   } catch (error) {
     console.error('Error getting response from Django backend:', error.message);
     throw new Error('Failed to get response from chatbot');
