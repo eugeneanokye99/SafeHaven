@@ -19,6 +19,14 @@ export default function Login() {
   const handleLogin = async () => {
     setLoading(true); // Show loading indicator
     try {
+        // Request location permissions
+        const { status } = await Location.requestForegroundPermissionsAsync();
+
+        if (status !== 'granted') {
+          Alert.alert('Permission Denied', 'Location permission is required to proceed.');
+          setLoading(false); // Hide loading indicator
+          return;
+        }
       // Get the current location
       const location = await Location.getCurrentPositionAsync({});
       const { latitude, longitude } = location.coords;
@@ -26,15 +34,8 @@ export default function Login() {
       const data = await loginUser(email, password, latitude, longitude);
       
       // Check if the login was successful
+
       if (data !== null) {
-        // Request location permissions
-        const { status } = await Location.requestForegroundPermissionsAsync();
-      
-        if (status !== 'granted') {
-          Alert.alert('Permission Denied', 'Location permission is required to proceed.');
-          setLoading(false); // Hide loading indicator
-          return;
-        }
 
         setUser({ 
           name: data.user.name, 

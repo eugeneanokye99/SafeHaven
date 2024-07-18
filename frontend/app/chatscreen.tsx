@@ -15,7 +15,7 @@ const ChatScreen = () => {
   const [socket, setSocket] = useState(null);
 
   useEffect(() => {
-    const socket = io("http://172.20.10.2:8080", {
+    const socket = io("http://192.162.0.101:8080", {
       transports: ["websocket"],
       upgrade: false
     });
