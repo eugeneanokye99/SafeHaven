@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import {
   SafeAreaView,
   StyleSheet,
@@ -9,38 +9,20 @@ import {
   TextInput,
   TouchableOpacity,
   FlatList,
-  Animated,
+  ScrollView,
 } from "react-native";
-import { FontAwesome6 } from "@expo/vector-icons";
 import { FontAwesome } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { useNavigation } from "@react-navigation/native";
-import { Entypo } from "@expo/vector-icons";
-import { Ionicons } from "@expo/vector-icons";
-import { MaterialIcons } from "@expo/vector-icons";
 import { useUser } from "../UserContext";
 import { searchUsers } from '../../services/api';
-
-const safetyTips = [
-  "Stay active and maintain a healthy diet.",
-  "Keep a list of emergency contacts.",
-  "Install grab bars in the bathroom.",
-  "Stay hydrated and avoid dehydration.",
-  "Keep your home well-lit to avoid falls.",
-];
+import Drawer from "@/components/Drawer";
 
 const Home = () => {
   const [search, setSearch] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const router = useRouter();
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const { user } = useUser();
   const imageSource = user?.profileImage ? { uri: user.profileImage } : null;
-  const toggleDrawer = () => {
-    setIsDrawerOpen(!isDrawerOpen);
-  };
-
-  const tipIndex = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     if (search.length > 0) {
@@ -58,109 +40,88 @@ const Home = () => {
     }
   }, [search]);
 
-  useEffect(() => {
-    Animated.loop(
-      Animated.sequence(
-        safetyTips.map((_, index) =>
-          Animated.timing(tipIndex, {
-            toValue: index + 1,
-            duration: 5000, // Change duration to 5000 milliseconds (5 seconds)
-            useNativeDriver: true,
-          })
-        )
-      )
-    ).start();
-  }, []);
-  
-
   const handleUserPress = (userId) => {
     router.push(`../profile?userId=${userId}`);
   };
 
-  const currentTipIndex = tipIndex.interpolate({
-    inputRange: safetyTips.map((_, index) => index),
-    outputRange: safetyTips.map((_, index) => index),
-    extrapolate: "clamp",
-  });
+  const featuredDoctors = [
+    { id: 1, name: "Dr. Navida Novara", specialty: "Heart Specialist", image: user?.profileImage },
+    { id: 2, name: "Dr. Roman Reigns", specialty: "Skin Care Specialist", image: user?.profileImage },
+    { id: 3, name: "Dr. Miskah", specialty: "Internal Organ Specialist", image: user?.profileImage },
+  ];
 
-  const currentTipOpacity = tipIndex.interpolate({
-    inputRange: safetyTips.map((_, index) => index),
-    outputRange: safetyTips.map(() => 1),
-    extrapolate: "clamp",
-  });
-
-  const getCurrentTip = () => {
-    const index = Math.round(currentTipIndex.__getValue());
-    return safetyTips[index];
-  };
+  const categories = [
+    { id: 1, name: "Connectivity", icon: "handshake-o" },
+    { id: 2, name: "Protection", icon: "shield" },
+    { id: 3, name: "Tracking", icon: "location-arrow" },
+    { id: 4, name: "Other", icon: "ellipsis-h" },
+  ];
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.topbar}>
-        <FontAwesome6
-          name="bars"
-          size={30}
-          color="black"
-          style={styles.bars}
-          onPress={toggleDrawer}
-        />
-        <View style={styles.userContainer}>
-          <Text style={styles.username}>{user?.name}</Text>
-          {imageSource && <Image style={styles.image} source={imageSource} />}
-        </View>
+      <ScrollView>
+        <Drawer />
+
+        <View style={styles.banner}>
+          <Text style={styles.bannerText}>Welcome to Your Health Companion</Text>
+          <Text style={styles.bannerSubText}>Supporting your health and wellness every step of the way</Text>
+          <TouchableOpacity style={styles.getStartedButton}>
+            <Text style={styles.getStartedText}>Get Started</Text>
+          </TouchableOpacity>
       </View>
-      {isDrawerOpen && (
-        <View style={styles.drawer}>
-          <TouchableOpacity
-            style={styles.drawerItem}
-            onPress={() => handleUserPress(user?.id)}
-          >
-            <Entypo name="users" size={24} color="black" />
-            <Text style={styles.drawerItemText}>Profile</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.drawerItem}
-            onPress={() => router.push("../settings")}
-          >
-            <Ionicons name="settings-sharp" size={24} color="black" />
-            <Text style={styles.drawerItemText}>Settings</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.drawerItem}
-            onPress={() => router.push("../logout")}
-          >
-            <MaterialIcons name="logout" size={24} color="black" />
-            <Text style={styles.drawerItemText}>Logout</Text>
-          </TouchableOpacity>
+
+        <View style={styles.searchContainer}>
+          <FontAwesome name="search" size={24} color="black" style={styles.searchIcon} />
+          <TextInput
+            placeholder="Search Friends"
+            value={search}
+            onChangeText={setSearch}
+            style={styles.input}
+          />
         </View>
-      )}
-      <View>
-        <FontAwesome name="search" size={24} color="black" style={styles.search} />
-        <TextInput
-          placeholder="Search Friends"
-          value={search}
-          onChangeText={setSearch}
-          style={styles.input}
-        />
-      </View>
-      {searchResults.length > 0 && (
-        <FlatList
-          data={searchResults}
-          keyExtractor={(item) => item._id}
-          renderItem={({ item }) => (
-            <TouchableOpacity onPress={() => handleUserPress(item._id)}>
-              <View style={styles.searchResult}>
-                <Text>{item.name}</Text>
+
+        {searchResults.length > 0 && (
+          <FlatList
+            data={searchResults}
+            keyExtractor={(item) => item._id}
+            renderItem={({ item }) => (
+              <TouchableOpacity onPress={() => handleUserPress(item._id)}>
+                <View style={styles.searchResult}>
+                  <Text>{item.name}</Text>
+                </View>
+              </TouchableOpacity>
+            )}
+          />
+        )}
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Categories</Text>
+          <View style={styles.categories}>
+            {categories.map((category) => (
+              <View key={category.id} style={styles.category}>
+                <FontAwesome name={category.icon} size={24} color="black" />
+                <Text style={styles.categoryText}>{category.name}</Text>
               </View>
-            </TouchableOpacity>
-          )}
-        />
-      )}
-      <View style={styles.safetyTipsContainer}>
-        <Animated.Text style={[styles.safetyTip, { opacity: currentTipOpacity }]}>
-          {getCurrentTip()}
-        </Animated.Text>
-      </View>
+            ))}
+          </View>
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Linked Users</Text>
+          <FlatList
+            horizontal
+            data={featuredDoctors}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={({ item }) => (
+              <View style={styles.doctorCard}>
+                <Image source={item.image} style={styles.doctorImage} />
+                <Text style={styles.doctorName}>{item.name}</Text>
+                <Text style={styles.doctorSpecialty}>{item.specialty}</Text>
+              </View>
+            )}
+          />
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -170,86 +131,108 @@ export default Home;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: StatusBar.currentHeight,
+    backgroundColor: "#F8F9FA",
   },
-  image: {
-    height: 50,
-    width: 50,
-    borderRadius: 999,
+  banner: {
+    backgroundColor: "#007bff",
+    padding: 20,
+    borderRadius: 10,
+    margin: 20,
   },
-  input: {
-    alignSelf: "center",
-    height: 50,
-    width: "80%",
-    borderColor: "gray",
-    borderWidth: 1,
-    marginBottom: 12,
-    marginTop: 20,
-    paddingHorizontal: 8,
-    borderRadius: 50,
-    fontSize: 20,
-    paddingLeft: 50,
+  bannerText: {
+    color: "#fff",
+    fontSize: 24,
+    fontWeight: "bold",
   },
-  search: {
-    position: "absolute",
-    top: 30,
-    left: 60,
+  bannerSubText: {
+    color: "#fff",
+    fontSize: 16,
+    marginVertical: 10,
   },
-  topbar: {
+  getStartedButton: {
     backgroundColor: "#fff",
-    height: 60,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 50,
+    alignSelf: "flex-start",
   },
-  userContainer: {
+  getStartedText: {
+    color: "#007bff",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  searchContainer: {
     flexDirection: "row",
     alignItems: "center",
+    margin: 20,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 1.41,
+    elevation: 2,
   },
-  username: {
-    fontSize: 20,
+  searchIcon: {
     marginRight: 10,
   },
-  bars: {
-    marginLeft: 10,
-  },
-  drawer: {
-    position: "absolute",
-    zIndex: 1,
-    top: 60,
-    left: 0,
-    width: "80%",
-    height: "100%",
-    backgroundColor: "#fff",
-    paddingVertical: 20,
-    paddingHorizontal: 10,
-    borderWidth: 1,
-    borderColor: "#ccc",
-  },
-  drawerItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 20,
-  },
-  drawerItemText: {
-    fontSize: 20,
-    marginLeft: 10,
+  input: {
+    flex: 1,
+    height: 40,
+    fontSize: 16,
   },
   searchResult: {
     padding: 10,
     borderBottomWidth: 1,
     borderBottomColor: "#ccc",
   },
-  safetyTipsContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 20,
+  section: {
+    marginHorizontal: 20,
+    marginVertical: 10,
   },
-  safetyTip: {
-    fontSize: 18,
-    textAlign: 'center',
-    paddingHorizontal: 20,
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
+  categories: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+  },
+  category: {
+    alignItems: "center",
+  },
+  categoryText: {
+    marginTop: 5,
+    fontSize: 16,
+  },
+  doctorCard: {
+    backgroundColor: "#fff",
+    padding: 10,
+    borderRadius: 10,
+    marginRight: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 1.41,
+    elevation: 2,
+    width: 150,
+    alignItems: "center",
+  },
+  doctorImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    marginBottom: 10,
+  },
+  doctorName: {
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  doctorSpecialty: {
+    fontSize: 14,
+    color: "#888",
   },
 });

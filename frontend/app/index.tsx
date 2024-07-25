@@ -48,19 +48,8 @@ export default function Login() {
           location: { latitude, longitude }
         });
 
-        // Set welcome visibility to true
-        setShowWelcome(true);
+        router.push('/(tabs)');
 
-        Animated.timing(welcomeOpacity, {
-          toValue: 1,
-          duration: 1000,
-          useNativeDriver: true,
-        }).start(() => {
-          // Redirect to home after animation
-          setTimeout(() => {
-            router.push('/(tabs)');
-          }, 1000);
-        });
       } else {
         console.error('Invalid credentials. Please try again.');
         Alert.alert('Invalid Credentials', 'Please check your email and password and try again.');
@@ -80,23 +69,20 @@ export default function Login() {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.keyboardAvoidingView}
       >
-        {showWelcome && (
-          <Animated.View style={[styles.welcomeContainer, { opacity: welcomeOpacity }]}>
-            <Text style={styles.welcomeText}>Welcome!, {user?.name}</Text>
-          </Animated.View>
-        )}
         <View style={styles.logoContainer}>
           <Image
             style={styles.image}
             source={require("../assets/images/img.jpg")}
           />
         </View>
-        <Text style={styles.title}>Welcome Back!</Text>
+        <Text style={styles.title}>Sign In To Your Account.</Text>
         <TextInput
-          placeholder="Email"
+          placeholder="Email Address"
           value={email}
           onChangeText={setEmail}
           style={styles.input}
+          keyboardType="email-address"
+          autoCapitalize="none"
         />
         <TextInput
           placeholder="Password"
@@ -105,19 +91,35 @@ export default function Login() {
           secureTextEntry
           style={styles.input}
         />
+        <View style={styles.rememberMeContainer}>
+          <TouchableOpacity style={styles.rememberMeButton}>
+            <Text style={styles.rememberMeText}>Remember For 30 Days</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => router.push('/forgot-password')}>
+            <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
+          </TouchableOpacity>
+        </View>
         <TouchableOpacity style={styles.button} onPress={handleLogin}>
           {loading ? (
             <ActivityIndicator size="small" color="#FFF" />
           ) : (
-            <Text style={styles.buttonText}>Login</Text>
+            <Text style={styles.buttonText}>Sign In</Text>
           )}
         </TouchableOpacity>
         <Text style={styles.signupText}>
           Don't have an account?
           <TouchableOpacity onPress={() => router.push('/signup')}>
-            <Text style={styles.signupLink}>Register here</Text>
+            <Text style={styles.signupLink}> Sign Up</Text>
           </TouchableOpacity>
         </Text>
+        <View style={styles.socialButtonsContainer}>
+          <TouchableOpacity style={styles.socialButton}>
+            <Text style={styles.socialButtonText}>Sign In With Facebook</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.socialButton}>
+            <Text style={styles.socialButtonText}>Sign In With Google</Text>
+          </TouchableOpacity>
+        </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -126,72 +128,96 @@ export default function Login() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
     padding: 16,
-    marginTop: StatusBar.currentHeight,
+    backgroundColor: '#f7f8fc',
+    paddingTop: 70,
   },
-  title: {
-    fontSize: 44,
-    marginBottom: 24,
-    textAlign: 'center',
-  },
-  input: {
-    height: 50,
-    borderColor: 'gray',
-    borderWidth: 1,
-    marginBottom: 12,
-    paddingHorizontal: 16,
-    borderRadius: 50,
-    fontSize: 20,
-  },
-  button: {
-    backgroundColor: '#007BFF',
-    padding: 15,
-    borderRadius: 50,
-    marginTop: 10,
-    marginBottom: 10,
-    alignItems: 'center',
-  },
-  buttonText: {
-    color: 'white',
-    fontSize: 20,
+  keyboardAvoidingView: {
+    flex: 1,
   },
   logoContainer: {
     alignItems: 'center',
     marginBottom: 20,
   },
   image: {
-    marginTop: 50,
-    borderRadius: 999,
-    width: 150,
-    height: 150,
+    width: 100,
+    height: 100,
+    marginBottom: 20,
+    borderRadius: 50,
   },
-  keyboardAvoidingView: {
-    flex: 1,
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 8,
+  },
+  subtitle: {
+    fontSize: 16,
+    color: '#888',
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  input: {
+    height: 50,
+    borderColor: '#ddd',
+    borderWidth: 1,
+    borderRadius: 25,
+    paddingHorizontal: 16,
+    marginBottom: 12,
+    fontSize: 16,
+    backgroundColor: '#fff',
+  },
+  rememberMeContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  rememberMeButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  rememberMeText: {
+    color: '#888',
+  },
+  forgotPasswordText: {
+    color: '#007BFF',
+  },
+  button: {
+    backgroundColor: '#007BFF',
+    paddingVertical: 12,
+    borderRadius: 25,
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 18,
   },
   signupText: {
     textAlign: 'center',
+    color: '#888',
+    marginBottom: 20,
   },
   signupLink: {
     color: '#007BFF',
-    top: 3,
-    marginLeft: 3,
   },
-  welcomeContainer: {
-    position: 'absolute',
-    display: 'none',
-    top: '7%',
-    left: '12%',
-    transform: [{ translateX: -50 }, { translateY: -50 }],
-    zIndex: 10,
-    backgroundColor: '#eee',
-    height: '100%',
-    width: '107%',
-    justifyContent: 'center',
+  socialButtonsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 20,
+  },
+  socialButton: {
+    flex: 1,
+    backgroundColor: '#fff',
+    paddingVertical: 12,
+    borderRadius: 25,
     alignItems: 'center',
+    marginHorizontal: 5,
+    borderWidth: 1,
+    borderColor: '#ddd',
   },
-  welcomeText: {
-    fontSize: 30,
-    fontWeight: 'bold',
+  socialButtonText: {
+    color: '#333',
   },
 });

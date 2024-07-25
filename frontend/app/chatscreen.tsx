@@ -4,6 +4,7 @@ import { useRoute } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import { fetchMessages, sendMessage, fetchUserById } from '../services/api';
 import io from "socket.io-client";
+import { AntDesign } from '@expo/vector-icons';
 
 const ChatScreen = () => {
   const route = useRoute();
@@ -15,7 +16,7 @@ const ChatScreen = () => {
   const [socket, setSocket] = useState(null);
 
   useEffect(() => {
-    const socket = io("http://192.162.0.101:8080", {
+    const socket = io("http://172.20.10.3:8080", {
       transports: ["websocket"],
       upgrade: false
     });
@@ -93,7 +94,7 @@ const ChatScreen = () => {
         {otherUser && (
           <View style={styles.header}>
             <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-              <Text style={styles.backButtonText}>{"< Back"}</Text>
+              <Text style={styles.backButtonText}><AntDesign name="arrowleft" size={34} color="black" /></Text>
             </TouchableOpacity>
             <Image source={{ uri: otherUser.profileImage }} style={styles.profileImage} />
             <View style={styles.userInfo}>
@@ -113,7 +114,6 @@ const ChatScreen = () => {
             </View>
           )}
           contentContainerStyle={styles.messagesContainer}
-          inverted  // Invert the FlatList to display latest messages at the bottom
         />
         <View style={styles.inputContainer}>
           <TextInput

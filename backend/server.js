@@ -4,6 +4,8 @@ const connectDB = require('./config/db');
 const cors = require('cors');
 const http = require('http');
 const socketIo = require('socket.io');
+const path = require('path');
+
 
 // Load config
 dotenv.config();
@@ -12,10 +14,11 @@ dotenv.config();
 connectDB();
 
 const app = express();
+app.use('/public', express.static(path.join(__dirname, 'public')));
 
-  
-  // Apply CORS middleware
-  app.use(cors());
+
+// Apply CORS middleware
+app.use(cors());
   
 // Middleware to parse JSON
 app.use(express.json());

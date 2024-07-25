@@ -3,7 +3,7 @@ from tensorflow.keras.models import load_model
 from .preprocess import preprocess_input, tokenizer
 
 # Load the model
-model = load_model('/home/eugene-anokye/Desktop/SafeHaven/backend/python-backend/chatbot_model.keras')
+model = load_model('/home/eugene-anokye/Desktop/SafeHaven/backend/python-backend/models/chatbot_model.keras')
 
 def generate_response(input_text):
     input_sequence = preprocess_input(input_text)
