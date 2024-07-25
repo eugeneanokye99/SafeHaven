@@ -9,16 +9,12 @@ import {
   TouchableOpacity,
   Alert,
 } from "react-native";
-import { FontAwesome6 } from "@expo/vector-icons";
+import { FontAwesome } from "@expo/vector-icons";
 import { useRouter, useLocalSearchParams } from "expo-router";
-import { Entypo } from '@expo/vector-icons';
-import { Ionicons } from '@expo/vector-icons';
-import { MaterialIcons } from '@expo/vector-icons';
-import { Feather } from '@expo/vector-icons';
+import { Entypo, Ionicons, MaterialIcons, Feather } from '@expo/vector-icons';
 import { fetchUserById, LinkUser } from '../services/api';
 import { useUser } from "./UserContext";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
 
 const ProfileScreen = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -32,11 +28,9 @@ const ProfileScreen = () => {
     try {
       const data = await LinkUser(user?.id, userId);
       
-      // Check if the Linking was successful
       if (data !== null) {
         setIsLinked(true);
         await AsyncStorage.setItem(`isLinked-${userId}`, 'true');
-        //Alert.alert('Linked');
       } else {
         console.error('Unable to link with user');
         Alert.alert('Unable to link with user');
@@ -94,12 +88,19 @@ const ProfileScreen = () => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.topbar}>
-        <FontAwesome6
+        <FontAwesome
           name="bars"
           size={30}
           color="black"
           style={styles.bars}
           onPress={toggleDrawer}
+        />
+        <Text style={styles.topbarTitle}>Profile</Text>
+        <FontAwesome
+          name="bell"
+          size={30}
+          color="black"
+          style={styles.bellIcon}
         />
       </View>
 
@@ -140,12 +141,13 @@ const ProfileScreen = () => {
         <Text style={styles.userDetails}>{profileUser?.email}</Text>
         <Text style={styles.userDetails}>{profileUser?.phone}</Text>
         <Text style={styles.userDetails}>{profileUser?.address}</Text>
-        <Text style={styles.userDetails}>{user?.location?.latitude}</Text>
-        <Text style={styles.userDetails}>{user?.location?.longitude}</Text>
-          {user?.id === profileUser?.id ? (
-            <Text>My Profile</Text>
-          ) : (
-            <View style={styles.buttonContainer}>
+        <Text style={styles.userBio}>
+          I am a available
+        </Text>
+        {user?.id === profileUser?.id ? (
+          <Text style={styles.myProfileText}>My Profile</Text>
+        ) : (
+          <View style={styles.buttonContainer}>
             {isLinked ? (
               <Text style={styles.linkedText}><Feather name="link" size={30} color="black" /> Linked</Text>
             ) : (
@@ -157,7 +159,7 @@ const ProfileScreen = () => {
               <Text style={styles.buttonText}><Ionicons name="chatbox" size={20} color="white" /> Chat</Text>
             </TouchableOpacity>
           </View>
-          )}
+        )}
       </View>
     </SafeAreaView>
   );
@@ -167,6 +169,21 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     marginTop: StatusBar.currentHeight,
+  },
+  topbar: {
+    backgroundColor: '#fff',
+    height: 60,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 10,
+  },
+  topbarTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  bellIcon: {
+    marginRight: 10,
   },
   profileImage: {
     width: 120,
@@ -183,6 +200,19 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#666',
     marginBottom: 5,
+    textAlign: 'center',
+  },
+  userBio: {
+    fontSize: 14,
+    color: '#666',
+    marginVertical: 10,
+    textAlign: 'center',
+    paddingHorizontal: 20,
+  },
+  myProfileText: {
+    fontSize: 16,
+    color: '#666',
+    marginVertical: 10,
   },
   buttonContainer: {
     flexDirection: 'row',
@@ -205,26 +235,6 @@ const styles = StyleSheet.create({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-  
-  },
-  topbar: {
-    backgroundColor: '#fff',
-    height: 60,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 10,
-  },
-  userContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  username: {
-    fontSize: 20,
-    marginRight: 10,
-  },
-  bars: {
-    marginLeft: 10,
   },
   drawer: {
     position: 'absolute',
@@ -252,7 +262,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     marginTop: 20,
-  }
+  },
 });
 
 export default ProfileScreen;

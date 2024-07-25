@@ -11,14 +11,11 @@ import {
 import { FontAwesome6 } from "@expo/vector-icons";
 import { Ionicons } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
 import io from 'socket.io-client';
 import Toast from 'react-native-toast-message';
 
 const Notifications = () => {
   const [notifications, setNotifications] = useState([]);
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const navigation = useNavigation();
   const socket = io("http://172.20.10.2:3000");
 
   const toggleDrawer = () => {
@@ -66,42 +63,6 @@ const Notifications = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.topbar}>
-        <FontAwesome6
-          name="bars"
-          size={30}
-          color="black"
-          style={styles.bars}
-          onPress={toggleDrawer}
-        />
-        <View style={styles.userContainer}>
-          <Text style={styles.username}>Eugene</Text>
-          <View style={styles.userIcon}>
-            <MaterialIcons name="person" size={30} color="black" />
-          </View>
-        </View>
-      </View>
-
-      {/* Drawer Content */}
-      {isDrawerOpen && (
-        <View style={styles.drawer}>
-          <TouchableOpacity
-            style={styles.drawerItem}
-            onPress={() => navigation.navigate("Settings")}
-          >
-            <Ionicons name="settings-sharp" size={24} color="black" />
-            <Text style={styles.drawerItemText}>Settings</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.drawerItem}
-            onPress={() => navigation.navigate("Logout")}
-          >
-            <MaterialIcons name="logout" size={24} color="black" />
-            <Text style={styles.drawerItemText}>Logout</Text>
-          </TouchableOpacity>
-        </View>
-      )}
-
       <Text style={styles.header}>Notifications</Text>
       <FlatList
         data={notifications}

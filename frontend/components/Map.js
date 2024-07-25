@@ -49,7 +49,7 @@ const Map = () => {
 
   const fetchSharedLocations = async () => {
     try {
-      const response = await fetch('http://172.20.10.2:3000/map/shared-locations');
+      const response = await fetch('http://172.20.10.3:3000/map/shared-locations');
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
