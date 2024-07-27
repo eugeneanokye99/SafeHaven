@@ -16,6 +16,8 @@ import { sendMessageToBot, fetchBotMessages } from '../services/api';
 import { useRoute } from "@react-navigation/native";
 import { useRouter } from "expo-router";
 import { useUser } from "./UserContext";
+import { AntDesign } from '@expo/vector-icons';
+
 
 const ChatbotScreen = () => {
   const [messages, setMessages] = useState([
@@ -76,7 +78,7 @@ const ChatbotScreen = () => {
       >
         <View style={styles.header}>
           <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-            <Text style={styles.backButtonText}>{"< Back"}</Text>
+            <Text style={styles.backButtonText}><AntDesign name="arrowleft" size={34} color="black" /></Text>
           </TouchableOpacity>
           <Image source={require('../assets/images/img.jpg')} style={styles.profileImage} />
           <View style={styles.userInfo}>

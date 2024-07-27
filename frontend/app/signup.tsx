@@ -22,7 +22,6 @@ export default function Register() {
 
   const handleSignup = async () => {
     setLoading(true); // Show loading indicator
-    console.log(profileImage)
     try {
       const data = await registerUser(name, email, password, address, dob, phone, profileImage);
       if (data !== null) {

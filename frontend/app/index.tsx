@@ -5,6 +5,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { loginUser, AuthResponse } from '../services/api';
 import { useUser } from './UserContext';
 import * as Location from 'expo-location';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -37,7 +39,7 @@ export default function Login() {
 
       if (data !== null) {
 
-        setUser({ 
+        const userData = { 
           name: data.user.name, 
           profileImage: data.user.profileImage, 
           dob: data.user.dob, 
@@ -46,8 +48,10 @@ export default function Login() {
           email: data.user.email, 
           address: data.user.address,
           location: { latitude, longitude }
-        });
-
+        };
+  
+        setUser(userData);
+        await AsyncStorage.setItem('userData', JSON.stringify(userData));
         router.push('/(tabs)');
 
       } else {

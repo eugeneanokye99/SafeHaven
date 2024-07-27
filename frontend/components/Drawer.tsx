@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, TouchableOpacity, Image } from "react-native";
+import { StyleSheet, Text, View, TouchableOpacity, Image, Alert } from "react-native";
 import React, { useState } from "react";
 import { FontAwesome6 } from "@expo/vector-icons";
 import { Ionicons } from '@expo/vector-icons';
@@ -14,21 +14,29 @@ const Drawer = () => {
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     const imageSource = user?.profileImage ? { uri: user.profileImage } : null;
 
+    const handleLogout = () => {
+      Alert.alert(
+        "Log Out",
+        "Are you sure you want to log out?",
+        [
+          {
+            text: "No",
+            onPress: () => console.log("Cancel Pressed"),
+            style: "cancel"
+          },
+          { text: "Yes", onPress: () => router.push('/') }
+        ],
+        { cancelable: false }
+      );
+    };
+
 
   const toggleDrawer = () => {
     setIsDrawerOpen(!isDrawerOpen);
   };
 
   return (
-    <View>
-      {/* <View style={styles.topbar}>
-
-        <View style={styles.userContainer}>
-          <Text style={styles.username}>{user?.name}</Text>
-          {imageSource && <Image style={styles.image} source={imageSource} />}
-        </View>
-      </View> */}
-
+    <View style={{zIndex: 1}}>
       <View style={styles.header}>
       <FontAwesome6
           name="bars"
@@ -45,14 +53,14 @@ const Drawer = () => {
         <View style={styles.drawer}>
           <TouchableOpacity
             style={styles.drawerItem}
-            onPress={() => router.push("Settings")}
+            onPress={() => router.push("../settings")}
           >
             <Ionicons name="settings-sharp" size={24} color="black" />
             <Text style={styles.drawerItemText}>Settings</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.drawerItem}
-            onPress={() => router.push("Logout")}
+            onPress={handleLogout}
           >
             <MaterialIcons name="logout" size={24} color="black" />
             <Text style={styles.drawerItemText}>Logout</Text>
@@ -70,17 +78,14 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   drawer: {
-    position: "absolute",
-    zIndex: 999,
-    top: 60,
+    position: 'absolute',
+    top: 95,
     left: 0,
     width: "80%",
-    height: "100%",
+    height: "1000%",
     backgroundColor: "#fff",
     paddingVertical: 20,
     paddingHorizontal: 10,
-    borderWidth: 1,
-    borderColor: "#ccc",
   },
   drawerItem: {
     flexDirection: "row",
