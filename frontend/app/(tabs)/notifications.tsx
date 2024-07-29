@@ -1,166 +1,82 @@
-import React, { useEffect, useState } from "react";
-import {
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  View,
-  StatusBar,
-  TouchableOpacity,
-  FlatList,
-} from "react-native";
-import { FontAwesome6 } from "@expo/vector-icons";
-import { Ionicons } from '@expo/vector-icons';
-import { MaterialIcons } from '@expo/vector-icons';
-import io from 'socket.io-client';
-import Toast from 'react-native-toast-message';
+import React, { useEffect, useState } from 'react';
+import { SafeAreaView, FlatList, Text, StyleSheet, View, StatusBar, ScrollView } from 'react-native';
+import { fetchNotifications } from '../../services/api';
+import { useUser } from '../UserContext';
 
 const Notifications = () => {
+  const { user } = useUser();
   const [notifications, setNotifications] = useState([]);
-  const socket = io("http://172.20.10.2:3000");
-
-  const toggleDrawer = () => {
-    setIsDrawerOpen(!isDrawerOpen);
-  };
 
   useEffect(() => {
-    // Register with socket.io server
-    socket.on('connect', () => {
-      socket.emit('register', 'user_id_here'); // Replace with actual user ID
-    });
-
-    // Listen for notifications
-    socket.on('notification', (data) => {
-      setNotifications((prevNotifications) => [...prevNotifications, data]);
-
-      // Show toast notification
-      Toast.show({
-        type: 'success', // 'info', 'error' etc
-        position: 'top',
-        text1: data.title,
-        text2: data.content,
-        visibilityTime: 4000, // duration in ms
-        autoHide: true,
-        topOffset: 30,
-        bottomOffset: 40,
-      });
-    });
-
-    return () => {
-      socket.disconnect();
+    const fetchData = async () => {
+      try {
+        const data = await fetchNotifications(user?.id);
+        setNotifications(data);
+      } catch (error) {
+        console.error("Error fetching notifications:", error);
+      }
     };
-  }, []);
+    fetchData();
+  }, [user?.id]);
 
-  const Item = ({ title, content, time, status }) => (
-    <TouchableOpacity style={styles.itemContainer}>
-      <View style={styles.item}>
-        <Text style={styles.title}>{title}</Text>
-        <Text style={styles.content}>{content}</Text>
-        <Text style={styles.time}>{time}</Text>
-        <Text style={styles.status}>{status}</Text>
-      </View>
-    </TouchableOpacity>
+  const renderItem = ({ item }) => (
+    <View style={styles.notificationItem}>
+      <Text style={styles.notificationText}>{item.message}</Text>
+      <Text style={styles.notificationDate}>{new Date(item.createdAt).toLocaleString()}</Text>
+    </View>
   );
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.header}>Notifications</Text>
-      <FlatList
-        data={notifications}
-        renderItem={({ item }) => <Item {...item} />}
-        keyExtractor={(item) => item.id}
-      />
+      <ScrollView>
+        <StatusBar barStyle="dark-content" />
+        <Text style={styles.header}>Notifications</Text>
+        <FlatList
+          data={notifications}
+          keyExtractor={(item) => item._id}
+          renderItem={renderItem}
+          contentContainerStyle={styles.listContent}
+        />
+      </ScrollView>
     </SafeAreaView>
   );
 };
 
-export default Notifications;
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: StatusBar.currentHeight || 0,
-  },
-  itemContainer: {
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-  },
-  item: {
-    backgroundColor: '#fff',
-    borderRadius: 4,
-    padding: 15,
-    marginBottom: 10,
-    borderWidth: 1,
-    borderColor: '#ccc',
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 5,
-  },
-  content: {
-    fontSize: 16,
-    marginBottom: 5,
-  },
-  time: {
-    fontSize: 14,
-    color: '#666',
-    marginBottom: 5,
-  },
-  status: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: (status) => status === 'Warning' ? 'red' : 'blue',
+    padding: 20,
+    backgroundColor: '#f7f7f7',
   },
   header: {
     fontSize: 24,
-    textAlign: 'center',
-    marginVertical: 10,
     fontWeight: 'bold',
-  },
-  topbar: {
-    backgroundColor: '#fff',
-    height: 60,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 10,
-  },
-  userContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  username: {
-    fontSize: 20,
-    marginRight: 10,
-  },
-  userIcon: {
-    borderRadius: 999,
-    borderWidth: 2,
-    padding: 8,
-  },
-  bars: {
-    marginLeft: 10,
-  },
-  drawer: {
-    position: 'absolute',
-    zIndex: 1,
-    top: 60,
-    left: 0,
-    width: '80%',
-    height: '100%',
-    backgroundColor: '#fff',
-    paddingVertical: 20,
-    paddingHorizontal: 10,
-    borderWidth: 1,
-    borderColor: '#ccc',
-  },
-  drawerItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
     marginBottom: 20,
+    color: '#333',
   },
-  drawerItemText: {
-    fontSize: 20,
-    marginLeft: 10,
+  listContent: {
+    paddingBottom: 20,
+  },
+  notificationItem: {
+    backgroundColor: '#fff',
+    padding: 15,
+    borderRadius: 10,
+    marginBottom: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 3,
+  },
+  notificationText: {
+    fontSize: 16,
+    color: '#333',
+  },
+  notificationDate: {
+    fontSize: 12,
+    color: '#888',
+    marginTop: 5,
   },
 });
+
+export default Notifications;

@@ -13,6 +13,7 @@ import { FontAwesome } from "@expo/vector-icons";
 import { Ionicons } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from "expo-router";
+import Drawer from "@/components/Drawer";
 
 const Settings = () => {
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -66,45 +67,7 @@ const Settings = () => {
     );
   return (
     <SafeAreaView style={styles.container}>
-         <View style={styles.topbar}>
-        <FontAwesome6
-          name="bars"
-          size={30}
-          color="black"
-          style={styles.bars}
-          onPress={toggleDrawer}
-        />
-        <View style={styles.userContainer}>
-          <Text style={styles.username}>Eugene</Text>
-          <View style={styles.userIcon}>
-            <FontAwesome name="user" size={30} color="black" />
-          </View>
-        </View>
-      </View>
-
-      {/* Drawer Content */}
-      {isDrawerOpen && (
-        <View style={styles.drawer}>
-          <TouchableOpacity
-            style={styles.drawerItem}
-            onPress={() => router.push("../settings")}
-          >
-            <Text style={styles.drawerItemText}>
-            <Ionicons name="settings-sharp" size={24} color="black" />
-              Settings
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.drawerItem}
-            onPress={() => router.push("/")}
-          >
-            <Text style={styles.drawerItemText}>
-            <MaterialIcons name="logout" size={24} color="black" />
-              Logout
-            </Text>
-          </TouchableOpacity>
-        </View>
-      )}
+    <Drawer />
 
 
       <FlatList

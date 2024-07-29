@@ -5,6 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useUser } from '../app/UserContext';
 import { useRouter } from 'expo-router';
+import { Entypo } from '@expo/vector-icons';
 
 
 
@@ -51,6 +52,13 @@ const Drawer = () => {
 
       {isDrawerOpen && (
         <View style={styles.drawer}>
+          <TouchableOpacity
+            style={styles.drawerItem}
+            onPress={() => router.push("../(tabs)/")}
+          >
+            <Entypo name="home" size={24} color="black" />
+            <Text style={styles.drawerItemText}>Home</Text>
+          </TouchableOpacity>
           <TouchableOpacity
             style={styles.drawerItem}
             onPress={() => router.push("../settings")}

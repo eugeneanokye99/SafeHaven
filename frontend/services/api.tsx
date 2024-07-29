@@ -1,6 +1,6 @@
 //const API_URL = 'http://10.0.2.2:3000';
 //const API_URL = 'http://192.168.0.101:3000';
-const API_URL = 'http://172.20.10.3:3000';
+const API_URL = 'http://192.168.0.9:3000';
 
 export interface AuthResponse {
   userId: string;
@@ -230,3 +230,22 @@ export const LinkUser = async (user_id: string, userId: string): Promise<AuthRes
     throw error;
   }
 };
+
+
+
+
+export const fetchNotifications = async (userId: string): Promise<AuthResponse | null> => {
+  try {
+    const response = await fetch(`${API_URL}/notifications/fetch?userId=${userId}`);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error fetching notifications:', error);
+    throw error;
+  }
+};
+
+export default API_URL;

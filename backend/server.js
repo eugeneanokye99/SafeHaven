@@ -27,6 +27,7 @@ app.use(express.json());
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/chat', require('./routes/chatRoutes'));
 app.use('/map',require('./routes/mapRoutes'));
+app.use('/notifications',require('./routes/notificationsRoutes'));
 
 
 const PORT = process.env.PORT || 3000;
