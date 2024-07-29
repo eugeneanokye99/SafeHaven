@@ -4,6 +4,7 @@ import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 import CustomMarker from './customMarker';
 import ShareLocation from './shareLocation'; // Import the ShareLocation component
+import API_URL from '@/services/api';
 
 const Map = () => {
   const initialLocation = {
@@ -49,7 +50,7 @@ const Map = () => {
 
   const fetchSharedLocations = async () => {
     try {
-      const response = await fetch('http://172.20.10.3:3000/map/shared-locations');
+      const response = await fetch(`${API_URL}/map/shared-locations`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }

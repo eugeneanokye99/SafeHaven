@@ -2,9 +2,10 @@ import React, { useState, useEffect } from "react";
 import { SafeAreaView, StyleSheet, Text, View, TextInput, Button, FlatList, StatusBar, TouchableOpacity, Image, KeyboardAvoidingView, Platform, Alert } from "react-native";
 import { useRoute } from "@react-navigation/native";
 import { useRouter } from "expo-router";
-import { fetchMessages, sendMessage, fetchUserById } from '../services/api';
+import { fetchMessages, sendMessage, fetchUserById, saveNotification } from '../services/api';
 import io from "socket.io-client";
 import { AntDesign } from '@expo/vector-icons';
+import NotificationPopup from "@/components/NotificationPopup";
 
 const ChatScreen = () => {
   const route = useRoute();
@@ -14,9 +15,11 @@ const ChatScreen = () => {
   const [messageText, setMessageText] = useState("");
   const [otherUser, setOtherUser] = useState(null);
   const [socket, setSocket] = useState(null);
+  const [showPopup, setShowPopup] = useState(false);
+  const [notification, setNotification] = useState("");
 
   useEffect(() => {
-    const socket = io("http://172.20.10.3:8080", {
+    const socket = io("http://192.168.0.9:8080", {
       transports: ["websocket"],
       upgrade: false
     });
@@ -48,12 +51,16 @@ const ChatScreen = () => {
 
     socket.on('message', (newMessage) => {
       setMessages((prevMessages) => [...prevMessages, newMessage]);
+      if (newMessage.from !== currentUserId) {
+        const notify = otherUser.name + ': ' + newMessage.text;
+        showNotification(notify);
+      }
     });
 
     return () => {
       socket.disconnect();
     };
-  }, [currentUserId]);
+  }, [currentUserId, otherUser]);
 
   useEffect(() => {
     const fetchInitialData = async () => {
@@ -70,10 +77,19 @@ const ChatScreen = () => {
     fetchInitialData();
   }, [currentUserId, otherUserId]);
 
+
+  const showNotification = (message) => {
+    setNotification(message);
+    setShowPopup(true);
+    setTimeout(() => {
+      setShowPopup(false);
+    }, 3000);
+  };
+
+
   const handleSend = async () => {
     try {
       const newMessage = await sendMessage(currentUserId, otherUserId, messageText);
-      setMessages([...messages, newMessage]);
       setMessageText("");
 
       // Emit the message to the socket server
@@ -91,6 +107,7 @@ const ChatScreen = () => {
         behavior={Platform.OS === "ios" ? "padding" : undefined}
         style={{ flex: 1 }}
       >
+        {showPopup && <NotificationPopup message={notification} />}
         {otherUser && (
           <View style={styles.header}>
             <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>

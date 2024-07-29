@@ -36,6 +36,10 @@ const UserSchema = new mongoose.Schema({
   longitude: {
     type: String,
   },
+  isOnline: {
+    type: Boolean,
+    default: false
+  },
 });
 
 

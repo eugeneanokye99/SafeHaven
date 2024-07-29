@@ -18,12 +18,12 @@ import { useRouter } from "expo-router";
 import { useUser } from "./UserContext";
 import { AntDesign } from '@expo/vector-icons';
 
-
 const ChatbotScreen = () => {
   const [messages, setMessages] = useState([
     { id: "1", text: "Hello! How can I assist you today?", sender: "bot" },
   ]);
   const [input, setInput] = useState("");
+  const [typingEffect, setTypingEffect] = useState("");
   const route = useRoute();
   const router = useRouter();
   const { userId } = route.params;
@@ -47,18 +47,33 @@ const ChatbotScreen = () => {
     fetchInitialData();
   }, [userId]);
 
+  const displayTypingEffect = (text) => {
+    let index = 0;
+    const interval = setInterval(() => {
+      setTypingEffect(text.slice(0, index + 1));
+      index += 1;
+      if (index === text.length) {
+        clearInterval(interval);
+      }
+    }, 40);
+    return () => clearInterval(interval);
+  };
+
   const sendMessage = async () => {
     if (input.trim() === "") return;
 
     const newMessage = { id: Date.now().toString(), text: input, sender: user?.name };
     setMessages((prevMessages) => [...prevMessages, newMessage]);
-
     setInput("");
 
     try {
       const botReply = await sendMessageToBot(userId, input);
-      const botMessage = { id: Date.now().toString(), text: botReply.reply, sender: "bot" };
-      setMessages((prevMessages) => [...prevMessages, botMessage]);
+      displayTypingEffect(botReply.reply);
+      setTimeout(() => {
+        const botMessage = { id: Date.now().toString(), text: botReply.reply, sender: "bot" };
+        setMessages((prevMessages) => [...prevMessages, botMessage]);
+        setTypingEffect("");
+      }, botReply.reply.length * 40);
     } catch (error) {
       console.error("Error sending message:", error);
     }
@@ -66,7 +81,7 @@ const ChatbotScreen = () => {
 
   const renderItem = ({ item }) => (
     <View style={[styles.message, item.sender === "bot" ? styles.botMessage : styles.userMessage]}>
-      <Text style={styles.messageText}>{item.text}</Text>
+      <Text style={styles.messageText}>{item.sender === "bot" && item.text === typingEffect ? typingEffect : item.text}</Text>
     </View>
   );
 

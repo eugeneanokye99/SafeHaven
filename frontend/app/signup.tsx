@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Text, ActivityIndicator, TextInput, View, ScrollView, StyleSheet, TouchableOpacity, StatusBar, Alert, Image, KeyboardAvoidingView, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { registerUser } from '../services/api';
+import API_URL, { registerUser } from '../services/api';
 import * as ImagePicker from 'expo-image-picker';
 import * as FileSystem from 'expo-file-system';
 import axios from 'axios';
@@ -68,7 +68,7 @@ export default function Register() {
         });
   
         // Upload the image to your server
-        const response = await axios.post('http://172.20.10.3:3000/api/auth/upload', formData, {
+        const response = await axios.post(`${API_URL}/api/auth/upload`, formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
           },

@@ -26,23 +26,31 @@ const ChatListScreen = () => {
     fetchChatData();
   }, [user?.id]);
 
-  const renderItem = ({ item }) => (
-    <TouchableOpacity 
-      style={styles.chatItem} 
-      onPress={() => router.push({ pathname: '/chatscreen', params: { currentUserId: user?.id, otherUserId: item._id } })}
-    >
-      <Image source={{ uri: item.profileImage }} style={styles.avatar} />
-      <View style={styles.chatDetails}>
-        <View style={styles.chatHeader}>
-          <Text style={styles.chatName}>{item.name}</Text>
-          <Text style={styles.chatTime}>{item.time}</Text>
+  const renderItem = ({ item }) => {
+    const unreadCount = item.unreadMessages; // Adjust according to your data structure
+  
+    return (
+      <TouchableOpacity 
+        style={styles.chatItem} 
+        onPress={() => router.push({ pathname: '/chatscreen', params: { currentUserId: user?.id, otherUserId: item._id } })}
+      >
+        <Image source={{ uri: item.profileImage }} style={styles.avatar} />
+        <View style={styles.chatDetails}>
+          <View style={styles.chatHeader}>
+            <Text style={styles.chatName}>{item.name}</Text>
+            {unreadCount > 0 && (
+              <View style={styles.unreadBadge}>
+                <Text style={styles.unreadText}>{unreadCount}</Text>
+              </View>
+            )}
+          </View>
+          <Text style={styles.chatMessage}>{item.lastMessage}</Text>
+          <Text style={styles.chatLastSeen}>Last seen: {item.lastSeen}</Text>
         </View>
-        <Text style={styles.chatMessage}>{item.lastMessage}</Text>
-        <Text style={styles.chatLastSeen}>Last seen: {item.lastSeen}</Text>
-      </View>
-    </TouchableOpacity>
-  );
-
+      </TouchableOpacity>
+    );
+  };
+  
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.header}><Entypo name="chat" size={24} color={'black'}/> Chats</Text>
@@ -148,6 +156,18 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginVertical: 20,
     fontWeight: 'bold',
+  },
+  unreadBadge: {
+    backgroundColor: 'red',
+    borderRadius: 10,
+    padding: 5,
+    position: 'absolute',
+    top: -5,
+    right: -10,
+  },
+  unreadText: {
+    color: 'white',
+    fontSize: 12,
   },
 });
 
