@@ -98,15 +98,20 @@ git push origin feature/your-feature
 ## Api Endpoints
 
 
-| Endpoint              | Method | Description                                                    |
-| --------------------- | ------ | -------------------------------------------------------------- |
-| /api/auth/register    | POST    | Get all courses with the total students appended               |
-| /api/auth             | GET    | Get all rooms available for scheduling( ie  exluding Offices) |
-| /api/rooms            | GET    | Get all rooms                                                  |
-| /api/students         | GET    | Get all students                                               |
-| /api/students         | POST   | Add  a student to the database                                |
-| /api/schedule/:code   | GET    | Get timetable based on the code for uniqueness                 |
-| /api/schedule/:code   | POST   | Generate timetable for with code for uniqueness                |
-
+| Endpoint                 | Method | Description                                                    |
+| -------------------------| ------ | -------------------------------------------------------------- |
+| /api/auth/register       | POST   | Resgister user                                                 |
+| /api/auth/login          | POST   | Logs user in                                                   |
+| /api/auth/upload         | POST   | Upload user profile pictures                                   |
+| /api/auth/link           | POST   | Links two users                                                |
+| /api/auth/search         | GET    | Gets search results of users                                   |
+| /api/auth/user           | GET    | Get user data by id                                            |
+| /api/chat/chatbot        | POST   | Send user query to chatbot                                     |
+| /api/chat/messages       | GET    | Upload user profile pictures                                   |
+| /api/chat/botmessages    | GET    | Links two users                                                |
+| /api/chat/send           | POST   | Gets search results of users                                   |
+| /api/chat/list           | GET    | Get user data by id                                            |
+| /api/map/shared-locations| GET    | Send user query to chatbot                                     |
+| /api/notifications/fetch | GET    | Send user query to chatbot                                     |
 
 
