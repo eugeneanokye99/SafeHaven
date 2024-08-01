@@ -7,13 +7,12 @@ import {
   StatusBar,
   Switch,
   FlatList,
-  Slider, // Import Slider for font size adjustment
   TextInput,
 } from "react-native";
 import { useRouter } from "expo-router";
 import Drawer from "@/components/Drawer";
 import * as Brightness from 'expo-brightness'; // Import for screen brightness control
-
+import Slider from '@react-native-community/slider'; // Import Slider
 
 const Settings = () => {
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -27,7 +26,8 @@ const Settings = () => {
 
     const initialSettings = [
         { id: '1', title: 'Location Tracking', enabled: true },
-        // Include other settings as needed
+        
+        { id: '2', title: 'Allow Linking',enabled: true}
     ];
 
     const [settings, setSettings] = useState(initialSettings);
@@ -42,7 +42,7 @@ const Settings = () => {
 
     const updateBrightness = async (value: number) => {
         setBrightness(value);
-        await ScreenBrightness.setBrightnessAsync(value); // Update screen brightness
+        await Brightness.setBrightnessAsync(value); // Update screen brightness
     };
 
     const Item = ({ id, title, enabled }: { id: string, title: string, enabled: boolean }) => (

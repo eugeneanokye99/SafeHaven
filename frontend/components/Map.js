@@ -30,6 +30,7 @@ const Map = () => {
     if (user.user.id) {
       fetchSharedLocations(user.user.id); // Fetch shared locations when component mounts and userId is available
     } 
+    console.log(user.user.id)
   }, [user]);
 
   const _getLocation = async () => {

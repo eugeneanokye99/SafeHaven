@@ -267,4 +267,18 @@ export const fetchLinkedUsers = async (userId: string): Promise<AuthResponse[] |
   }
 };
 
+export const fetchNotifications = async (userId: string): Promise<AuthResponse | null> => {
+  try {
+    const response = await fetch(`${API_URL}/notifications/fetch?userId=${userId}`);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error fetching notifications:', error);
+    throw error;
+  }
+};
+
 export default API_URL;

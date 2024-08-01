@@ -28,7 +28,7 @@ const Notifications = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView>
+      
         <StatusBar barStyle="dark-content" />
         <Text style={styles.header}>Notifications</Text>
         <FlatList
@@ -37,7 +37,7 @@ const Notifications = () => {
           renderItem={renderItem}
           contentContainerStyle={styles.listContent}
         />
-      </ScrollView>
+      
     </SafeAreaView>
   );
 };

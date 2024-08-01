@@ -19,7 +19,7 @@ const ChatScreen = () => {
   const [notification, setNotification] = useState("");
 
   useEffect(() => {
-    const socket = io("http://192.168.0.9:8080", {
+    const socket = io("http://172.20.10.3:8082", {
       transports: ["websocket"],
       upgrade: false
     });

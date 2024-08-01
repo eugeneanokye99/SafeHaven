@@ -42,6 +42,7 @@ export default function RootLayout() {
           <Stack.Screen name="profile" options={{ headerShown: false }} />
           <Stack.Screen name="chatscreen" options={{ headerShown: false }} />
           <Stack.Screen name="+not-found" />
+    
         </Stack>
       </ThemeProvider>
     </UserProvider>

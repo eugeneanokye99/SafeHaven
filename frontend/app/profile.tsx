@@ -14,7 +14,6 @@ import { useRouter, useLocalSearchParams } from "expo-router";
 import { Entypo, Ionicons, MaterialIcons, Feather } from '@expo/vector-icons';
 import { fetchUserById, LinkUser, UnlinkUser } from '../services/api';
 import { useUser } from "./UserContext";
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const ProfileScreen = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -23,7 +22,7 @@ const ProfileScreen = () => {
   const { userId } = useLocalSearchParams();
   const { user } = useUser();
   const [isLinked, setIsLinked] = useState(false);
-  const [linkId, setLinkId] = useState("");
+  const [linkIdd, setLinkId] = useState("");
 
   const handleLink = async () => {
     try {
@@ -31,10 +30,9 @@ const ProfileScreen = () => {
       
       if (data !== null) {
         setIsLinked(true);
-        console.log(data._id)
-        setLinkId(data._id)
-        console.log(linkId)
-        await AsyncStorage.setItem(`isLinked-${userId}`, 'true');
+        console.log(data.linkId)
+        setLinkId(data.linkId)
+        console.log(linkIdd)
       } else {
         console.error('Unable to link with user');
         Alert.alert('Unable to link with user');
@@ -48,13 +46,12 @@ const ProfileScreen = () => {
 
   const handleUnlink = async () => {
     try {  
-      console.log(linkId)
-      const data = await UnlinkUser(linkId);
+      console.log(linkIdd)
+      const data = await UnlinkUser(linkIdd);
       console.log('Unlink successful:', data);
   
       // Update state and AsyncStorage
       setIsLinked(false);
-      await AsyncStorage.removeItem(`isLinked-${userId}`);
     } catch (error) {
       console.error('Unlink failed:', error.message);
       Alert.alert('Unlink Failed', error.message);

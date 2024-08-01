@@ -78,7 +78,7 @@ const Home = () => {
         <View style={styles.banner}>
           <Text style={styles.bannerText}>Welcome to Your Health Companion</Text>
           <Text style={styles.bannerSubText}>Supporting your health and wellness every step of the way</Text>
-          <TouchableOpacity style={styles.getStartedButton}>
+          <TouchableOpacity style={styles.getStartedButton} onPress={() => router.push('../chatbot')}>
             <Text style={styles.getStartedText}>Get Started</Text>
           </TouchableOpacity>
       </View>
