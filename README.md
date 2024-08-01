@@ -7,12 +7,11 @@ The Elderly Safety Mobile App is designed to enhance the well-being and safety o
 ## Features
 
 - **User Authentication**: Secure login system for users and caregivers.
-- **Welcome Animation**: Engaging welcome animation on successful login.
 - **User Profile**: View and edit user profiles with ease.
 - **Search Functionality**: Easily search for safety tips and resources.
-- **Safety Tips**: Animated safety tips specifically designed for elderly users.
 - **Side Drawer Navigation**: Intuitive navigation menu for easy access to app features.
 - **Chatbot Assistance**: Customer service chatbot to help users with queries and provide guidance.
+- **User connectivity**: Seamless comunication with linked user.
 - **Elderly-Friendly Interface**: Simplified and accessible user interface catering to elderly users.
 
 ## Technologies Used
@@ -22,7 +21,7 @@ The Elderly Safety Mobile App is designed to enhance the well-being and safety o
 - **Chatbot**: Custom chatbot developed with Python and TensorFlow for natural language processing.
 - **Authentication**: Secure user authentication using industry-standard practices.
 - **Data Management**: Integration with MongoDB for efficient data storage and retrieval.
-- **Animations**: Lottie animations for a dynamic and engaging user experience.
+- **Socket**: For seamless and real-time communication.
 
 ## Installation
 
