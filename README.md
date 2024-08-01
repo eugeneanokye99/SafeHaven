@@ -107,11 +107,11 @@ git push origin feature/your-feature
 | /api/auth/search         | GET    | Gets search results of users                                   |
 | /api/auth/user           | GET    | Get user data by id                                            |
 | /api/chat/chatbot        | POST   | Send user query to chatbot                                     |
-| /api/chat/messages       | GET    | Upload user profile pictures                                   |
-| /api/chat/botmessages    | GET    | Links two users                                                |
-| /api/chat/send           | POST   | Gets search results of users                                   |
-| /api/chat/list           | GET    | Get user data by id                                            |
-| /api/map/shared-locations| GET    | Send user query to chatbot                                     |
-| /api/notifications/fetch | GET    | Send user query to chatbot                                     |
+| /api/chat/messages       | GET    | Gets user messages from other user                             |
+| /api/chat/botmessages    | GET    | Gets bot responses message for the user                        |
+| /api/chat/send           | POST   | Sends users message to the database                            |
+| /api/chat/list           | GET    | Gets all user messages for a particular chat                   |
+| /api/map/shared-locations| GET    | Fetch locations of users that have been linked together        |
+| /api/notifications/fetch | GET    | Fetch notifications from the database                          |
 
 
