@@ -12,7 +12,7 @@ import {
 import { FontAwesome } from "@expo/vector-icons";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { Entypo, Ionicons, MaterialIcons, Feather } from '@expo/vector-icons';
-import { fetchUserById, LinkUser } from '../services/api';
+import { fetchUserById, LinkUser, UnlinkUser } from '../services/api';
 import { useUser } from "./UserContext";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -23,6 +23,7 @@ const ProfileScreen = () => {
   const { userId } = useLocalSearchParams();
   const { user } = useUser();
   const [isLinked, setIsLinked] = useState(false);
+  const [linkId, setLinkId] = useState("");
 
   const handleLink = async () => {
     try {
@@ -30,6 +31,9 @@ const ProfileScreen = () => {
       
       if (data !== null) {
         setIsLinked(true);
+        console.log(data._id)
+        setLinkId(data._id)
+        console.log(linkId)
         await AsyncStorage.setItem(`isLinked-${userId}`, 'true');
       } else {
         console.error('Unable to link with user');
@@ -41,6 +45,23 @@ const ProfileScreen = () => {
       Alert.alert('Link Failed', errorMessage);
     }
   };
+
+  const handleUnlink = async () => {
+    try {  
+      console.log(linkId)
+      const data = await UnlinkUser(linkId);
+      console.log('Unlink successful:', data);
+  
+      // Update state and AsyncStorage
+      setIsLinked(false);
+      await AsyncStorage.removeItem(`isLinked-${userId}`);
+    } catch (error) {
+      console.error('Unlink failed:', error.message);
+      Alert.alert('Unlink Failed', error.message);
+    }
+  };
+  
+
 
   useEffect(() => {
     const getUser = async () => {
@@ -149,7 +170,9 @@ const ProfileScreen = () => {
         ) : (
           <View style={styles.buttonContainer}>
             {isLinked ? (
-              <Text style={styles.linkedText}><Feather name="link" size={30} color="black" /> Linked</Text>
+             <TouchableOpacity style={styles.button} onPress={handleUnlink}>
+              <Text style={styles.buttonText}><Feather name="link" size={20} color="white" /> UnLink</Text>
+            </TouchableOpacity>
             ) : (
               <TouchableOpacity style={styles.button} onPress={handleLink}>
                 <Text style={styles.buttonText}><Feather name="link" size={20} color="white" /> Link</Text>
