@@ -14,15 +14,32 @@ import {
 import { FontAwesome } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useUser } from "../UserContext";
-import { searchUsers } from '../../services/api';
+import { fetchLinkedUsers, searchUsers } from '../../services/api';
 import Drawer from "@/components/Drawer";
 
 const Home = () => {
   const [search, setSearch] = useState("");
   const [searchResults, setSearchResults] = useState([]);
+  const [linkedUsers, setLinkedUsers] = useState([]); // State for linked users
   const router = useRouter();
   const { user } = useUser();
   const imageSource = user?.profileImage ? { uri: user.profileImage } : null;
+
+  useEffect(() => {
+    if (user?.id) {
+ 
+      fetchLinkedUsersData();
+    }
+  }, [user]);
+  const fetchLinkedUsersData = async () => {
+    try {
+      const results = await fetchLinkedUsers(user?.id);
+      setLinkedUsers(results || []); // Set linked users data
+      console.log (results)
+    } catch (error) {
+      console.error('Error fetching linked users: ', error);
+    }
+  };
 
   useEffect(() => {
     if (search.length > 0) {
@@ -44,11 +61,7 @@ const Home = () => {
     router.push(`../profile?userId=${userId}`);
   };
 
-  const featuredDoctors = [
-    { id: 1, name: "Dr. Navida Novara", specialty: "Heart Specialist", image: user?.profileImage },
-    { id: 2, name: "Dr. Roman Reigns", specialty: "Skin Care Specialist", image: user?.profileImage },
-    { id: 3, name: "Dr. Miskah", specialty: "Internal Organ Specialist", image: user?.profileImage },
-  ];
+  
 
   const categories = [
     { id: 1, name: "Connectivity", icon: "handshake-o" },
@@ -66,7 +79,7 @@ const Home = () => {
           <Text style={styles.bannerText}>Welcome to Your Health Companion</Text>
           <Text style={styles.bannerSubText}>Supporting your health and wellness every step of the way</Text>
           <TouchableOpacity style={styles.getStartedButton}>
-            <Text style={styles.getStartedText} onPress={()=> router.push('../chatbot')}>Get Started</Text>
+            <Text style={styles.getStartedText}>Get Started</Text>
           </TouchableOpacity>
       </View>
 
@@ -110,16 +123,20 @@ const Home = () => {
           <Text style={styles.sectionTitle}>Linked Users</Text>
           <FlatList
             horizontal
-            data={featuredDoctors}
-            keyExtractor={(item) => item.id.toString()}
-            renderItem={({ item }) => (
-              <View style={styles.doctorCard}>
-                <Image source={item.image} style={styles.doctorImage} />
-                <Text style={styles.doctorName}>{item.name}</Text>
-                <Text style={styles.doctorSpecialty}>{item.specialty}</Text>
-              </View>
+            data={linkedUsers}
+            keyExtractor={(user) => user._id.toString()}
+            renderItem={({item: user}) => (
+              <TouchableOpacity onPress={() => handleUserPress(user._id)}>
+                <View style={styles.doctorCard}>
+                  <Image source={{ uri: user.profileImage }} style={styles.profileImage} />
+                  <Text style={styles.user}>{user.name}</Text>
+                </View>
+              </TouchableOpacity>
             )}
           />
+
+            
+          
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -221,13 +238,13 @@ const styles = StyleSheet.create({
     width: 150,
     alignItems: "center",
   },
-  doctorImage: {
+  profileImage: {
     width: 100,
     height: 100,
     borderRadius: 50,
     marginBottom: 10,
   },
-  doctorName: {
+  user: {
     fontSize: 16,
     fontWeight: "bold",
   },

@@ -31,7 +31,7 @@ app.use('/notifications',require('./routes/notificationsRoutes'));
 
 
 const PORT = process.env.PORT || 3000;
-const WEBSOCKET_PORT = process.env.WEBSOCKET_PORT || 8080;
+const WEBSOCKET_PORT = process.env.WEBSOCKET_PORT || 8082;
 
 const server = http.createServer(app);
 server.listen(PORT, () => {

@@ -5,19 +5,20 @@ import {
   Text,
   View,
   StatusBar,
-  TouchableOpacity,
-  FlatList,
   Switch,
+  FlatList,
+  Slider, // Import Slider for font size adjustment
+  TextInput,
 } from "react-native";
-import { FontAwesome6 } from "@expo/vector-icons";
-import { FontAwesome } from "@expo/vector-icons";
-import { Ionicons } from '@expo/vector-icons';
-import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from "expo-router";
 import Drawer from "@/components/Drawer";
+import * as Brightness from 'expo-brightness'; // Import for screen brightness control
+
 
 const Settings = () => {
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+    const [fontSize, setFontSize] = useState(16); // Default font size
+    const [brightness, setBrightness] = useState(1); // Default brightness (1 is full brightness)
     const router = useRouter();
 
     const toggleDrawer = () => {
@@ -25,13 +26,8 @@ const Settings = () => {
     };
 
     const initialSettings = [
-        { id: '1', title: 'Location Tracking', enabled: true},
-        { id: '2', title: 'Call Filtering', enabled: true},
-        { id: '3', title: 'Body Status Monitoring', enabled: true },
-        { id: '4', title: 'Body Status Monitoring', enabled: true },
-        { id: '5', title: 'Fall Detection', enabled: true },
-        { id: '6', title: 'Blood Pressure Limit', enabled: true },
-       
+        { id: '1', title: 'Location Tracking', enabled: true },
+        // Include other settings as needed
     ];
 
     const [settings, setSettings] = useState(initialSettings);
@@ -44,9 +40,16 @@ const Settings = () => {
         );
     };
 
+    const updateBrightness = async (value: number) => {
+        setBrightness(value);
+        await ScreenBrightness.setBrightnessAsync(value); // Update screen brightness
+    };
+
     const Item = ({ id, title, enabled }: { id: string, title: string, enabled: boolean }) => (
         <View style={styles.item}>
-            <Text style={styles.title}>{title}</Text>
+            <Text style={[styles.title, { fontSize }]}>
+                {title}
+            </Text>
             <Switch
                 onValueChange={() => toggleSwitch(id)}
                 value={enabled}
@@ -54,12 +57,11 @@ const Settings = () => {
         </View>
     );
 
-   const ListHeaderComponent = () => (
-      <View style={styles.header}>
-          <Text style={styles.headerTitle}>Settings</Text>
-      </View>
-  );   
-
+    const ListHeaderComponent = () => (
+        <View style={styles.header}>
+            <Text style={styles.headerTitle}>Settings</Text>
+        </View>
+    );
 
     return (
         <SafeAreaView style={styles.container}>
@@ -71,6 +73,30 @@ const Settings = () => {
                 keyExtractor={item => item.id}
                 ListHeaderComponent={ListHeaderComponent}
             />
+
+            <View style={styles.controlContainer}>
+                <Text style={styles.controlLabel}>Font Size</Text>
+                <Slider
+                    style={styles.slider}
+                    minimumValue={12}
+                    maximumValue={30}
+                    value={fontSize}
+                    onValueChange={(value) => setFontSize(value)}
+                    step={1}
+                />
+                <Text style={styles.controlValue}>{Math.round(fontSize)}</Text>
+                
+                <Text style={styles.controlLabel}>Screen Brightness</Text>
+                <Slider
+                    style={styles.slider}
+                    minimumValue={0}
+                    maximumValue={1}
+                    value={brightness}
+                    onValueChange={(value) => updateBrightness(value)}
+                    step={0.01}
+                />
+                <Text style={styles.controlValue}>{(brightness * 100).toFixed(0)}%</Text>
+            </View>
             
         </SafeAreaView>
     );
@@ -94,62 +120,30 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 22,
     },
-    topbar: {
-        backgroundColor: "#fff",
-        height: 60,
-        justifyContent: "center",
+    controlContainer: {
+        padding: 20,
+        backgroundColor: "#f4f4f4",
     },
-    userContainer: {
-        position: "absolute",
-        right: 5,
-        flexDirection: "row",
-        alignItems: "center",
+    controlLabel: {
+        fontSize: 18,
+        marginBottom: 10,
     },
-    username: {
-        fontSize: 20,
-        marginRight: 10,
+    slider: {
+        width: '100%',
+        height: 40,
+        marginBottom: 10,
     },
-    userIcon: {
-        borderRadius: 999,
-        borderWidth: 2,
-        padding: 8,
-        paddingHorizontal: 13,
-    },
-    bars: {
-        marginLeft: 10,
-    },
-    drawer: {
-        position: "absolute",
-        zIndex: 1,
-        top: 80,
-        left: 0,
-        width: "80%",
-        height: "100%",
-        backgroundColor: "#ffffff",
-        paddingVertical: 20,
-        paddingHorizontal: 10,
-        borderWidth: 1,
-        borderColor: "#ccc",
-    },
-    drawerItem: {
+    controlValue: {
+        fontSize: 16,
+        textAlign: 'center',
         marginBottom: 20,
-        borderBottomWidth: 1,
-        paddingVertical: 10,
-    },
-    drawerItemText: {
-        fontSize: 20,
-        flexDirection: 'row', 
-        alignItems: 'center',
-    },
-    drawerIcons: {
-        marginRight: 10,
     },
     header: {
-      padding: 20,
-      backgroundColor: "#f4f4f4",
-  },
-  headerTitle: {
-      fontSize: 24,
-      fontWeight: "bold",
-  },
+        padding: 20,
+        backgroundColor: "#f4f4f4",
+    },
+    headerTitle: {
+        fontSize: 24,
+        fontWeight: "bold",
+    },
 });
