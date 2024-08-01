@@ -27,7 +27,7 @@ exports.fetchSharedLocation = async (req, res) => {
     const locations = await User.find({
       _id: { $in: linkedUserIds }
     }, '_id name latitude longitude');
-
+console.log(locations)
     res.json(locations);
   } catch (error) {
     console.error('Error fetching shared locations:', error);

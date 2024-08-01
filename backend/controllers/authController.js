@@ -182,7 +182,6 @@ exports.linkUser = async (req, res) => {
   const { user_id, userId } = req.body;
 
   try {
-    console.log(`Linking users: ${user_id} -> ${userId}`);
 
     // Validate if user_id and userId exist
     const user1 = await User.findById(user_id);
@@ -191,7 +190,6 @@ exports.linkUser = async (req, res) => {
       return res.status(404).json({ message: 'One or both users not found' });
     }
 
-    console.log(`Users found: ${user1.name}, ${user2.name}`);
 
     // Check if link already exists (prevent duplicates)
     const existingLink = await Link.findOne({ user_id, userId });
