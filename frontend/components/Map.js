@@ -4,7 +4,9 @@ import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 import CustomMarker from './customMarker';
 import ShareLocation from './shareLocation'; // Import the ShareLocation component
-import API_URL from '@/services/api';
+import { useUser } from "../app/UserContext";
+import API_URL from '../services/api'
+
 
 const Map = () => {
   const initialLocation = {
@@ -21,11 +23,14 @@ const Map = () => {
     longitudeDelta: 0.0421,
   });
   const mapRef = useRef(null);
+  const user = useUser();
 
   useEffect(() => {
     _getLocation();
-    fetchSharedLocations(); // Fetch shared locations when component mounts
-  }, []);
+    if (user.user.id) {
+      fetchSharedLocations(user.user.id); // Fetch shared locations when component mounts and userId is available
+    } 
+  }, [user]);
 
   const _getLocation = async () => {
     try {
@@ -48,9 +53,10 @@ const Map = () => {
     }
   };
 
-  const fetchSharedLocations = async () => {
+  const fetchSharedLocations = async (userId) => {
     try {
-      const response = await fetch(`${API_URL}/map/shared-locations`);
+      console.log(userId)
+      const response = await fetch(`${API_URL}/map/shared-locations?userId=${userId}`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }

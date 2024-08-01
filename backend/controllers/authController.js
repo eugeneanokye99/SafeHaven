@@ -4,6 +4,8 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const multer = require('multer');
 const path = require('path');
+const mongoose = require('mongoose');
+
 
 // Register User
 exports.registerUser = async (req, res) => {
@@ -177,28 +179,91 @@ exports.getUserById = async (req, res) => {
 };
 
 exports.linkUser = async (req, res) => {
-const { user_id, userId } = req.body;
+  const { user_id, userId } = req.body;
 
-try {
-  // Validate if user_id and userId exist
-  const user1 = await User.findById(user_id);
-  const user2 = await User.findById(userId);
-  if (!user1 || !user2) {
-    return res.status(404).json({ message: 'One or both users not found' });
+  try {
+    console.log(`Linking users: ${user_id} -> ${userId}`);
+
+    // Validate if user_id and userId exist
+    const user1 = await User.findById(user_id);
+    const user2 = await User.findById(userId);
+    if (!user1 || !user2) {
+      return res.status(404).json({ message: 'One or both users not found' });
+    }
+
+    console.log(`Users found: ${user1.name}, ${user2.name}`);
+
+    // Check if link already exists (prevent duplicates)
+    const existingLink = await Link.findOne({ user_id, userId });
+    if (existingLink) {
+      return res.status(400).json({ message: 'Users are already linked' });
+    }
+
+    // Create a new link
+    const link = new Link({
+      user_id,
+      userId,
+    });
+
+   // Save the link to the database
+   const savedLink = await link.save();
+
+   // Send the link ID to the frontend
+   res.status(200).json({ message: 'Link created successfully', linkId: savedLink._id });
+  } catch (err) {
+    console.error('Error linking users:', err.message);
+    res.status(500).json({ message: 'Server error' });
   }
+};
 
-  // Create a new link
-  const link = new Link({
-    user_id,
-    userId,
-  });
 
-  // Save the link to the database
-  await link.save();
+// Get linked users for a specific user
+exports.getLinkedUsers = async (req, res) => {
+  const { userId } = req.query;
+  const userObjectId = new mongoose.Types.ObjectId(userId);
 
-  res.status(200).json({ message: 'Link created successfully', link });
-} catch (err) {
-  console.error('Error linking users:', err.message);
-  res.status(500).json({ message: 'Server error' });
-}
+  try {
+    // Find links where the user is either user_id or userId
+    const links = await Link.find({
+      $or: [{ user_id: userObjectId }, { userId: userObjectId }]
+    })
+      .populate('user_id', 'name profileImage')
+      .populate('userId', 'name profileImage');
+
+    // Extract the linked users, excluding the logged-in user
+    const linkedUsers = links.map(link => {
+      if (link.user_id._id.equals(userObjectId)) {
+        return link.userId;
+      }
+      return link.user_id;
+    }).filter(user => !user._id.equals(userObjectId)); // Exclude the logged-in user
+
+    res.status(200).json(linkedUsers);
+  } catch (err) {
+    console.error('Error fetching linked users:', err.message);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+
+// Function to unlink users
+exports.unlinkUser = async (req, res) => {
+  const { linkId } = req.body;
+
+  const linkObjectId = new mongoose.Types.ObjectId(linkId);
+
+  try {
+    // Remove the link using the linkId
+    const result = await Link.deleteOne({ _id: linkObjectId });
+
+    // Check if a document was deleted
+    if (result.deletedCount === 0) {
+      return res.status(404).json({ message: 'Link not found' });
+    }
+
+    res.status(200).json({ message: 'User unlinked successfully' });
+  } catch (err) {
+    console.error('Error unlinking user:', err.message);
+    res.status(500).json({ message: 'Server error' });
+  }
 };

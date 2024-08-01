@@ -7,6 +7,7 @@ import {
   StatusBar,
   TouchableOpacity,
   FlatList,
+  Switch,
 } from "react-native";
 import { FontAwesome6 } from "@expo/vector-icons";
 import { FontAwesome } from "@expo/vector-icons";
@@ -23,63 +24,59 @@ const Settings = () => {
       setIsDrawerOpen(!isDrawerOpen);
     };
 
-    const DATA = [
-        {
-          id: '1',
-          title: 'Location Filtering',
-        },
-        {
-          id: '2',
-          title: 'Call filtering',
-        },
-        {
-          id: '3',
-          title: 'Body Status monitioring',
-        },
-        {
-          id: '4',
-          title: 'Body Status monitioring',
-        },
-        {
-          id: '5',
-          title: 'Fall Detection',
-        },
-        {
-          id: '6',
-          title: 'Blood Pressure Limit',
-        },
-        {
-          id: '7',
-          title: 'Lower',
-        },
-        {
-          id: '8',
-          title: 'Upper',
-        },
+    const initialSettings = [
+        { id: '1', title: 'Location Tracking', enabled: true},
+        { id: '2', title: 'Call Filtering', enabled: true},
+        { id: '3', title: 'Body Status Monitoring', enabled: true },
+        { id: '4', title: 'Body Status Monitoring', enabled: true },
+        { id: '5', title: 'Fall Detection', enabled: true },
+        { id: '6', title: 'Blood Pressure Limit', enabled: true },
+       
     ];
-      
-    type ItemProps = {title: string};
-    
-    const Item = ({title}: ItemProps) => (
-    <View style={styles.item}>
-        <Text style={styles.title}>{title}</Text>
-    </View>
+
+    const [settings, setSettings] = useState(initialSettings);
+
+    const toggleSwitch = (id: string) => {
+        setSettings(prevSettings => 
+            prevSettings.map(setting => 
+                setting.id === id ? { ...setting, enabled: !setting.enabled } : setting
+            )
+        );
+    };
+
+    const Item = ({ id, title, enabled }: { id: string, title: string, enabled: boolean }) => (
+        <View style={styles.item}>
+            <Text style={styles.title}>{title}</Text>
+            <Switch
+                onValueChange={() => toggleSwitch(id)}
+                value={enabled}
+            />
+        </View>
     );
-  return (
-    <SafeAreaView style={styles.container}>
-    <Drawer />
+
+   const ListHeaderComponent = () => (
+      <View style={styles.header}>
+          <Text style={styles.headerTitle}>Settings</Text>
+      </View>
+  );   
 
 
-      <FlatList
-        data={DATA}
-        renderItem={({item}) => <Item title={item.title} />}
-        keyExtractor={item => item.id}
-      />
-    </SafeAreaView>
-  )
+    return (
+        <SafeAreaView style={styles.container}>
+            <Drawer />
+
+            <FlatList   
+                data={settings}
+                renderItem={({ item }) => <Item id={item.id} title={item.title} enabled={item.enabled} />}
+                keyExtractor={item => item.id}
+                ListHeaderComponent={ListHeaderComponent}
+            />
+            
+        </SafeAreaView>
+    );
 }
 
-export default Settings
+export default Settings;
 
 const styles = StyleSheet.create({
     container: {
@@ -90,6 +87,9 @@ const styles = StyleSheet.create({
         padding: 20,
         marginVertical: 8,
         marginHorizontal: 10,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
     },
     title: {
         fontSize: 22,
@@ -108,17 +108,17 @@ const styles = StyleSheet.create({
     username: {
         fontSize: 20,
         marginRight: 10,
-      },
-      userIcon: {
+    },
+    userIcon: {
         borderRadius: 999,
         borderWidth: 2,
         padding: 8,
         paddingHorizontal: 13,
-      },
-      bars: {
+    },
+    bars: {
         marginLeft: 10,
-      },
-      drawer: {
+    },
+    drawer: {
         position: "absolute",
         zIndex: 1,
         top: 80,
@@ -130,18 +130,26 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10,
         borderWidth: 1,
         borderColor: "#ccc",
-      },
-      drawerItem: {
+    },
+    drawerItem: {
         marginBottom: 20,
         borderBottomWidth: 1,
         paddingVertical: 10,
-      },
-      drawerItemText: {
+    },
+    drawerItemText: {
         fontSize: 20,
         flexDirection: 'row', 
         alignItems: 'center',
-      },
-      drawerIcons: {
+    },
+    drawerIcons: {
         marginRight: 10,
-      },
-})
+    },
+    header: {
+      padding: 20,
+      backgroundColor: "#f4f4f4",
+  },
+  headerTitle: {
+      fontSize: 24,
+      fontWeight: "bold",
+  },
+});

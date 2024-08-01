@@ -1,6 +1,6 @@
 //const API_URL = 'http://10.0.2.2:3000';
 //const API_URL = 'http://192.168.0.101:3000';
-const API_URL = 'http://192.168.0.9:3000';
+const API_URL = 'http://172.20.10.3:3000';
 
 export interface AuthResponse {
   userId: string;
@@ -13,6 +13,7 @@ export interface AuthResponse {
   text: string;
   otherUserId: string;
   message: string;
+  linkId: string;
   token?: string;
   user?: {
     id: string;
@@ -231,19 +232,37 @@ export const LinkUser = async (user_id: string, userId: string): Promise<AuthRes
   }
 };
 
-
-
-
-export const fetchNotifications = async (userId: string): Promise<AuthResponse | null> => {
+export const UnlinkUser = async (linkId: string): Promise<AuthResponse | null> => {
   try {
-    const response = await fetch(`${API_URL}/notifications/fetch?userId=${userId}`);
+    const response = await fetch(`${API_URL}/api/auth/unlink`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ linkId }),
+    });
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-    const data = await response.json();
-    return data;
+    const newMessage = await response.json();
+    return newMessage;
   } catch (error) {
-    console.error('Error fetching notifications:', error);
+    console.error('Error sending message:', error);
+    throw error;
+  }
+};
+
+export const fetchLinkedUsers = async (userId: string): Promise<AuthResponse[] | null> => {
+  try {
+    const response = await fetch(`${API_URL}/api/auth/linked_users?userId=${userId}`);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const linkedUsers = await response.json();
+    return linkedUsers;
+    console.log(linkedUsers);
+  } catch (error) {
+    console.error('Error fetching linked users:', error);
     throw error;
   }
 };
